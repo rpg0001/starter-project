@@ -1,4 +1,5 @@
 import express from 'express';
+import mysql from 'mysql2';
 import morgan from 'morgan';
 import NotesRouter from './routers/notesRouter';
 
@@ -16,6 +17,14 @@ app.use(morgan(function (tokens, req, res) {
   ].join(' ')
 }));
 app.use(express.json())
+
+// Connect to DB
+export const connection = mysql.createPool({
+    host: 'localhost',
+    user: 'root',
+    password: 'Password@1',
+    database: 'notes_app'
+}).promise();
 
 // Health check
 app.get('/', (req, res) => {

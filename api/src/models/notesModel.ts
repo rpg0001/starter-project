@@ -1,11 +1,4 @@
-import mysql from 'mysql2';
-
-const pool = mysql.createPool({
-    host: 'localhost',
-    user: 'root',
-    password: 'Password@1',
-    database: 'notes_app'
-}).promise();
+import { connection } from "../app";
 
 export type Note = {
     id: number,
@@ -16,7 +9,7 @@ export type Note = {
 export async function getNote(
     id: number
 ): Promise<Note> {
-    const result = await pool.query(`
+    const result = await connection.query(`
         SELECT * FROM notes WHERE id = ?`
     , [id]);
     const rows = result[0] as any[];
@@ -24,7 +17,7 @@ export async function getNote(
 }
 
 export async function listNotes(): Promise<Note[]>  {
-    const [rows] = await pool.query(`
+    const [rows] = await connection.query(`
         SELECT * FROM notes
     `);
     return rows as Note[];
@@ -34,7 +27,7 @@ export async function createNote(
     title: string, 
     content: string
 ): Promise<Note>  {
-    const [result] = await pool.query(`
+    const [result] = await connection.query(`
         INSERT INTO notes (title, content)
         VALUES (?, ?)
     `, [ title, content ]) as any;
@@ -53,7 +46,7 @@ export async function updateNote(
     const newTitle = title ?? note.title;
     const newContent = content ?? note.content;
     
-    const result = await pool.query(`
+    const result = await connection.query(`
         UPDATE notes
         SET title = ?, content = ?
         WHERE id = ?
@@ -66,7 +59,7 @@ export async function updateNote(
 export async function deleteNote(
     id: number
 ) {
-    await pool.query(`
+    await connection.query(`
         DELETE FROM notes
         WHERE id = ?
     `, [id]);
