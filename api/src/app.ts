@@ -3,7 +3,8 @@ import express from 'express';
 import mysql from 'mysql2';
 import morgan from 'morgan';
 import NotesRouter from './routers/notesRouter';
-import { validateEnvironment } from './utils/environmentConfig';
+import { validateEnvironment } from './utils/environment';
+const errorHandler = require('./middleware/errorHandler');
 
 dotenv.config();
 
@@ -16,7 +17,7 @@ if (configErrors.length > 0) {
   console.error(`Configuration errors: ${configErrors.join(", ")}`);
 }
 
-// Middleware
+// Middleware part 1
 app.use(express.json())
 app.use(morgan(function (tokens, req, res) {
   return [
@@ -43,6 +44,9 @@ app.get('/', (req, res) => {
 
 // Routers
 app.use(NotesRouter);
+
+// Middleware part 2
+app.use(errorHandler);
 
 // Start server
 app.listen(port, () => {

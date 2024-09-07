@@ -1,6 +1,17 @@
-import { environment } from "../environment";
+/* 
+    List of required environment variables
+    Add these to your .env file and make sure to add any new ones here
+    To view stack traces, set NODE_ENV to development
+*/
 
-export type EnvironmentVariable = {
+export const environment: EnvironmentVariable[] = [
+    { name: 'DB_HOST', type: 'string'},
+    { name: 'DB_USER', type: 'string'},
+    { name: 'DB_PASSWORD', type: 'string'},
+    { name: 'DB_NAME', type: 'string'},
+]
+
+type EnvironmentVariable = {
     name: string;
     type: 'string' | 'number'
 }

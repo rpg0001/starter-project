@@ -2,25 +2,23 @@ import { mapToJsonApiListResponse } from '../maps/jsonApiMaps';
 import { mapNoteToJsonApiObjectResponse } from '../maps/notesMaps';
 import { Note } from '../models/notesModels';
 import * as Service from '../services/notesService';
-import { getBadRequestError, getInternalServerError, getNotFoundError } from '../utils/errorResponses';
+import { BadRequestError, NotFoundError } from '../utils/errors';
 
-export async function getNote(req: any, res: any) {
-    const id = Number(req.params.id);
+export async function getNote(req: any, res: any, next: any) {
     try {
-        if (isNaN(id)) return res.status(400).json(getBadRequestError('/id'));
+        const id = Number(req.params.id);
+        if (isNaN(id)) throw new BadRequestError('/id', 'Id must be a number');
 
         const note = await Service.getNote(req.params.id);
+        if (!note) throw new NotFoundError(`Could not find note with id ${id}`);
 
-        if (!note) return res.status(404).json(getNotFoundError());
-
-        return res.status(200).json(mapNoteToJsonApiObjectResponse(note));
+        res.status(200).json(mapNoteToJsonApiObjectResponse(note));
     } catch (error: any) {
-        console.error(`Error retrieving note with id ${id}: ${error.message}`);
-        return res.status(500).json(getInternalServerError());
+        return next(error);
     }
 }
 
-export async function listNotes(req: any, res: any) {
+export async function listNotes(req: any, res: any, next: any) {
     try {
         const notes = await Service.listNotes();
         return res.status(200).json(
@@ -29,53 +27,49 @@ export async function listNotes(req: any, res: any) {
             )
         );
     } catch (error: any) {
-        console.error(`Error retrieving notes: ${error.message}`);
-        return res.status(500).json();
+        next(error);
     }
 }
 
-export async function createNote(req: any, res: any) {
+export async function createNote(req: any, res: any, next: any) {
     try {
         const title = req.body?.title;
         const content = req.body?.content;
 
-        if (!title) return res.status(400).json(getBadRequestError('/title'));
-        if (!content) return res.status(400).json(getBadRequestError('/content'));
+        if (!title) throw new BadRequestError('/title');
+        if (!content) throw new BadRequestError('/content');
 
         const note = await Service.createNote(title, content);
         return res.status(201).json(mapNoteToJsonApiObjectResponse(note));
     } catch (error: any) {
-        console.error(`Error creating note: ${error.message}`);
-        return res.status(500).json(getInternalServerError());
+        next(error);
     }
 }
 
-export async function updateNote(req: any, res: any) {
+export async function updateNote(req: any, res: any, next: any) {
     const id = Number(req.params.id);
     try {
         const title = req.body?.title;
         const content = req.body?.content;
 
-        if (isNaN(id)) return res.status(400).json(getBadRequestError('/id'));
-        if (!title && !content) return res.status(400).json(getBadRequestError('/body'));
+        if (isNaN(id)) throw new BadRequestError('/id');
+        if (!title && !content) throw new BadRequestError('/body');
         
         const note = await Service.updateNote(id, title, content);
         return res.status(200).json(mapNoteToJsonApiObjectResponse(note));
     } catch (error: any) {
-        console.error(`Error updaing note with id ${id}: ${error.message}`);
-        return res.status(500).json(getInternalServerError());
+        next(error);
     }
 }
 
-export async function deleteNote(req: any, res: any) {
-    const id = Number(req.params.id);
+export async function deleteNote(req: any, res: any, next: any) {
     try {
-        if (isNaN(id)) return res.status(400).json(getBadRequestError('/id'));
+        const id = Number(req.params.id);
+        if (isNaN(id)) throw new BadRequestError('/id');
         
         await Service.deleteNote(req.params.id);
         return res.status(204).json();
     } catch (error: any) {
-        console.error(`Error retrieving note with id ${id}: ${error.message}`);
-        return res.status(500).json(getInternalServerError());
+        next(error);
     }
 }
