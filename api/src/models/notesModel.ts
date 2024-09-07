@@ -29,5 +29,22 @@ export async function createNote(title: string, content: string) {
     `, [ title, content ]) as any;
 
     const id = result.insertId;
-    return getNote(id);
+    const newNote = await getNote(id);
+    return newNote;
+}
+
+export async function updateNote(id: number, title: string, content: string) {
+    const note = await getNote(id);
+    const newTitle = title ?? note.title;
+    const newContent = content ?? note.content;
+    
+    const result = await pool.query(`
+        UPDATE notes
+        SET title = ?, content = ?
+        WHERE id = ?
+    `, [newTitle, newContent, id]) as any;
+
+    const updatedNote = await getNote(id);
+    console.log(updatedNote);
+    return updatedNote;
 }
