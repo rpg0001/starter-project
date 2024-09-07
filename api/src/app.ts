@@ -1,6 +1,6 @@
 import express from 'express';
+import morgan from 'morgan';
 import NotesRouter from './routers/notesRouter';
-import morgan from "morgan";
 
 const app = express();
 const port = 8080;
