@@ -3,13 +3,21 @@ import express from 'express';
 import mysql from 'mysql2';
 import morgan from 'morgan';
 import NotesRouter from './routers/notesRouter';
+import { validateEnvironment } from './utils/environmentConfig';
 
 dotenv.config();
 
 const app = express();
 const port = 8080;
 
+// Validate config
+const configErrors = validateEnvironment();
+if (configErrors.length > 0) {
+  console.error(`Configuration errors: ${configErrors.join(", ")}`);
+}
+
 // Middleware
+app.use(express.json())
 app.use(morgan(function (tokens, req, res) {
   return [
     ['[',tokens.date(req, res),']'].join(''),
@@ -19,7 +27,6 @@ app.use(morgan(function (tokens, req, res) {
     ['(',tokens['response-time'](req, res), 'ms)'].join('')
   ].join(' ')
 }));
-app.use(express.json())
 
 // Connect to DB
 export const connection = mysql.createPool({
