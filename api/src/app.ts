@@ -6,16 +6,12 @@ import NotesRouter from './routers/notesRouter';
 import { validateEnvironment } from './utils/environment';
 const errorHandler = require('./middleware/errorHandler');
 
+// Set up config and log if invalid
 dotenv.config();
+validateEnvironment();
 
 const app = express();
 const port = 8080;
-
-// Validate config
-const configErrors = validateEnvironment();
-if (configErrors.length > 0) {
-  console.error(`Configuration errors: ${configErrors.join(", ")}`);
-}
 
 // Middleware part 1
 app.use(express.json())

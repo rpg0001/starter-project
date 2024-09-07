@@ -5,7 +5,9 @@ export type JsonApiObject = {
     relationships?: any;
 }
 
-export function mapToJsonApiListResponse(items: JsonApiObject[]) {
+export function mapToJsonApiListResponse(
+    items: JsonApiObject[]
+) {
     return {
         data: items
     }

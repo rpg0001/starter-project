@@ -33,5 +33,10 @@ export function validateEnvironment(): string[] {
             errorMessages.push(`${v.name} is not a number`);
         }
     })
+    
+    if (errorMessages.length > 0) {
+        console.error(`Configuration error(s): ${errorMessages.join(', ')}`);
+    }
+
     return errorMessages;
 }
