@@ -1,10 +1,5 @@
 import { connection } from "../app";
-
-export type Note = {
-    id: number,
-    title: string,
-    content: string
-}
+import { Note } from "../models/notesModels";
 
 export async function getNote(
     id: number

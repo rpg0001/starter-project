@@ -1,4 +1,4 @@
-import { Note } from "../models/notesModel";
+import { Note } from "../models/notesModels";
 import { JsonApiObject } from "./jsonApiMaps";
 
 export function mapNoteToJsonApiObjectResponse(
