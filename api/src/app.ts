@@ -1,7 +1,10 @@
+import dotenv from 'dotenv';
 import express from 'express';
 import mysql from 'mysql2';
 import morgan from 'morgan';
 import NotesRouter from './routers/notesRouter';
+
+dotenv.config();
 
 const app = express();
 const port = 8080;
@@ -20,10 +23,10 @@ app.use(express.json())
 
 // Connect to DB
 export const connection = mysql.createPool({
-    host: 'localhost',
-    user: 'root',
-    password: 'Password@1',
-    database: 'notes_app'
+    host: process.env['DB_HOST'],
+    user: process.env['DB_USER'],
+    password: process.env['DB_PASSWORD'],
+    database: process.env['DB_NAME']
 }).promise();
 
 // Health check
