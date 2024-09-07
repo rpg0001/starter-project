@@ -5,7 +5,8 @@ import NotesRouter from './routers/notesRouter';
 const app = express();
 const port = 8080;
 
-app.use(morgan("tiny"));
+app.use(morgan('tiny'));
+app.use(express.json())
 
 app.get('/', (req, res) => {
   res.status(200).send("OK");
