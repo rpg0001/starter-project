@@ -1,4 +1,5 @@
 import { BaseError, InternalServerError, JsonApiErrorResponse } from "../utils/errors";
+import { logger } from "../utils/logger";
 
 function errorHandler(
     err: any, 
@@ -6,7 +7,7 @@ function errorHandler(
     res: any, 
     next: any
 ) {
-    console.error(process.env.NODE_ENV === 'development' ? err.stack : `Error: ${err.message}`);
+    logger.error(process.env.NODE_ENV === 'development' ? err.stack : `Error: ${err.message}`);
 
     const baseError: BaseError = err instanceof BaseError
         ? err

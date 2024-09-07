@@ -4,11 +4,15 @@
     To view stack traces, set NODE_ENV to development
 */
 
+import { logger } from "./logger";
+
 export const environment: EnvironmentVariable[] = [
-    { name: 'DB_HOST', type: 'string'},
-    { name: 'DB_USER', type: 'string'},
-    { name: 'DB_PASSWORD', type: 'string'},
-    { name: 'DB_NAME', type: 'string'},
+    { name: 'DB_HOST', type: 'string' },
+    { name: 'DB_USER', type: 'string' },
+    { name: 'DB_PASSWORD', type: 'string' },
+    { name: 'DB_NAME', type: 'string' },
+    { name: 'NODE_ENV', type: 'string' },
+    { name: 'LOG_LEVEL', type: 'string' },
 ]
 
 type EnvironmentVariable = {
@@ -35,7 +39,7 @@ export function validateEnvironment(): string[] {
     })
     
     if (errorMessages.length > 0) {
-        console.error(`Configuration error(s): ${errorMessages.join(', ')}`);
+        logger.error(`Configuration error(s): ${errorMessages.join(', ')}`);
     }
 
     return errorMessages;
