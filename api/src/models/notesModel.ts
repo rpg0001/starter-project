@@ -45,6 +45,12 @@ export async function updateNote(id: number, title: string, content: string) {
     `, [newTitle, newContent, id]) as any;
 
     const updatedNote = await getNote(id);
-    console.log(updatedNote);
     return updatedNote;
+}
+
+export async function deleteNote(id: number) {
+    await pool.query(`
+        DELETE FROM notes
+        WHERE id = ?
+    `, [id]);
 }

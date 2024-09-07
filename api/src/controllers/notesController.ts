@@ -72,8 +72,7 @@ export async function updateNote(req: any, res: any) {
         }
 
         const note = await NotesModel.updateNote(id, title, content);
-        console.log(note);
-        res.status(200).json(note);
+        return res.status(200).json(note);
     } catch (error: any) {
         console.error(`Error updaing note with id ${id}: ${error.message}`);
         return res.status(500).json();
@@ -81,5 +80,19 @@ export async function updateNote(req: any, res: any) {
 }
 
 export async function deleteNote(req: any, res: any) {
-    return res.status(204).json({});
+    const id = Number(req.params.id);
+    try {
+        if (isNaN(id)) {
+            const message = `Bad request - Id (${id}) must be a number`;
+            console.error(message);
+            return res.status(400).json(message);
+        }
+    
+        await NotesModel.deleteNote(req.params.id);
+
+        return res.status(204).json();
+    } catch (error: any) {
+        console.error(`Error retrieving note with id ${id}: ${error.message}`);
+        return res.status(500).json();
+    }
 }
