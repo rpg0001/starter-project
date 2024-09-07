@@ -1,9 +1,9 @@
 import { Note } from "../models/notesModels";
-import { JsonApiObject } from "./jsonApiMaps";
+import { JsonApiObjectResponse } from "../utils/successResponses";
 
 export function mapNoteToJsonApiObjectResponse(
     note: Note
-): JsonApiObject {
+): JsonApiObjectResponse {
     return {
         id: note.id,
         type: 'notes',

@@ -1,8 +1,8 @@
-import { mapToJsonApiListResponse } from '../maps/jsonApiMaps';
 import { mapNoteToJsonApiObjectResponse } from '../maps/notesMaps';
 import { Note } from '../models/notesModels';
 import * as Service from '../services/notesService';
 import { BadRequestError, NotFoundError } from '../utils/errors';
+import { mapToJsonApiListResponse } from '../utils/successResponses';
 
 export async function getNote(req: any, res: any, next: any) {
     try {
