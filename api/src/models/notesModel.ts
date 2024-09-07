@@ -7,7 +7,15 @@ const pool = mysql.createPool({
     database: 'notes_app'
 }).promise();
 
-export async function getNote(id: number) {
+export type Note = {
+    id: number,
+    title: string,
+    content: string
+}
+
+export async function getNote(
+    id: number
+): Promise<Note> {
     const result = await pool.query(`
         SELECT * FROM notes WHERE id = ?`
     , [id]);
@@ -15,14 +23,17 @@ export async function getNote(id: number) {
     return rows[0];
 }
 
-export async function listNotes() {
+export async function listNotes(): Promise<Note[]>  {
     const [rows] = await pool.query(`
         SELECT * FROM notes
     `);
-    return rows;
+    return rows as Note[];
 }
 
-export async function createNote(title: string, content: string) {
+export async function createNote(
+    title: string, 
+    content: string
+): Promise<Note>  {
     const [result] = await pool.query(`
         INSERT INTO notes (title, content)
         VALUES (?, ?)
@@ -33,7 +44,11 @@ export async function createNote(title: string, content: string) {
     return newNote;
 }
 
-export async function updateNote(id: number, title: string, content: string) {
+export async function updateNote(
+    id: number, 
+    title: string, 
+    content: string
+): Promise<Note>  {
     const note = await getNote(id);
     const newTitle = title ?? note.title;
     const newContent = content ?? note.content;
@@ -48,7 +63,9 @@ export async function updateNote(id: number, title: string, content: string) {
     return updatedNote;
 }
 
-export async function deleteNote(id: number) {
+export async function deleteNote(
+    id: number
+) {
     await pool.query(`
         DELETE FROM notes
         WHERE id = ?

@@ -1,3 +1,5 @@
+import { mapToJsonApiListResponse } from '../maps/jsonApiMaps';
+import { mapNoteToJsonApiObjectResponse } from '../maps/notesMaps';
 import * as NotesModel from '../models/notesModel';
 import { getBadRequestError, getInternalServerError, getNotFoundError } from '../utils/errors';
 
@@ -10,7 +12,7 @@ export async function getNote(req: any, res: any) {
 
         if (!note) return res.status(404).json(getNotFoundError());
 
-        return res.status(200).json(note);
+        return res.status(200).json(mapNoteToJsonApiObjectResponse(note));
     } catch (error: any) {
         console.error(`Error retrieving note with id ${id}: ${error.message}`);
         return res.status(500).json(getInternalServerError());
@@ -20,7 +22,11 @@ export async function getNote(req: any, res: any) {
 export async function listNotes(req: any, res: any) {
     try {
         const notes = await NotesModel.listNotes();
-        return res.status(200).json(notes);
+        return res.status(200).json(
+            mapToJsonApiListResponse(
+                notes.map(note => mapNoteToJsonApiObjectResponse(note))
+            )
+        );
     } catch (error: any) {
         console.error(`Error retrieving notes: ${error.message}`);
         return res.status(500).json();
@@ -36,7 +42,7 @@ export async function createNote(req: any, res: any) {
         if (!content) return res.status(400).json(getBadRequestError('/content'));
 
         const note = await NotesModel.createNote(title, content);
-        return res.status(201).json(note);
+        return res.status(201).json(mapNoteToJsonApiObjectResponse(note));
     } catch (error: any) {
         console.error(`Error creating note: ${error.message}`);
         return res.status(500).json(getInternalServerError());
@@ -53,7 +59,7 @@ export async function updateNote(req: any, res: any) {
         if (!title && !content) return res.status(400).json(getBadRequestError('/body'));
         
         const note = await NotesModel.updateNote(id, title, content);
-        return res.status(200).json(note);
+        return res.status(200).json(mapNoteToJsonApiObjectResponse(note));
     } catch (error: any) {
         console.error(`Error updaing note with id ${id}: ${error.message}`);
         return res.status(500).json(getInternalServerError());
