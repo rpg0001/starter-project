@@ -1,4 +1,4 @@
-// JSON Api compliant error response
+// JSON API compliant error response
 export class JsonApiErrorResponse {
     errors: BaseError[];
     constructor(errors: BaseError[]) {
@@ -6,7 +6,7 @@ export class JsonApiErrorResponse {
     }
 }
 
-// JSON Api compliant base error
+// JSON API compliant base error
 export class BaseError extends Error {
     status: number;
     code: string;
@@ -22,6 +22,7 @@ export class BaseError extends Error {
     }
 }
 
+// Non-BaseErrors will be wrapped as this
 export class InternalServerError extends BaseError {
     constructor(message?: string) {
         super(500, 'INTERNAL_SERVER_ERROR', message)

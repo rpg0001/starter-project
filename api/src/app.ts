@@ -33,7 +33,7 @@ export const connection = mysql.createPool({
     database: process.env['DB_NAME']
 }).promise();
 
-// Health check
+// Health check route
 app.get('/', (req, res) => {
   res.status(200).send('OK');
 });

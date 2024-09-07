@@ -1,13 +1,8 @@
-export type JsonApiObject = {
-    id: string | number;
-    type: string;
-    attributes: any;
-    relationships?: any;
-}
+import { JsonApiObjectListResponse, JsonApiObjectResponse } from "../utils/successResponses"
 
 export function mapToJsonApiListResponse(
-    items: JsonApiObject[]
-) {
+    items: JsonApiObjectResponse[]
+): JsonApiObjectListResponse {
     return {
         data: items
     }
@@ -18,7 +13,7 @@ export function mapToJsonApiObjectResponse(
     type: string,
     attributes?: any,
     relationships?: any
-): JsonApiObject {
+): JsonApiObjectResponse {
     return {
         id: id,
         type: type,
