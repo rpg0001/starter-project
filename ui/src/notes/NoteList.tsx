@@ -14,6 +14,7 @@ export default function NoteList() {
     return (
         <div>
             <h1>All notes</h1>
+            <Link to='create'>Add new note</Link>
             {notes.map(note => 
                 <>
                     <div>

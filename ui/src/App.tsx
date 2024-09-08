@@ -4,6 +4,7 @@ import NotFound from "./general/NotFound";
 import Home from "./home/Home";
 import Layout from "./shared/Layout";
 import NoteDetails from "./notes/NoteDetails";
+import { CreateNote } from "./notes/CreateNote";
 
 export default function App() {
   return (
@@ -13,6 +14,7 @@ export default function App() {
             <Route index element={<Home />} />
             <Route path="notes" element={<NoteList />} />
             <Route path="notes/:id" element={<NoteDetails />} />
+            <Route path="notes/create" element={<CreateNote />} />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
