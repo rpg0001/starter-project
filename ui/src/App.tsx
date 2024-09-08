@@ -1,16 +1,19 @@
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import NoteList from "./notes/NoteList";
+import NotFound from "./general/NotFound";
+import Home from "./home/Home";
+import Layout from "./shared/Layout";
 
-function App() {
+export default function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <h1>Notes app</h1>
-      </header>
-      <main>
-        <NoteList />
-      </main>
-    </div>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Layout />}>
+            <Route index element={<Home />} />
+            <Route path="notes" element={<NoteList />} />
+            <Route path="*" element={<NotFound />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
   );
 }
-
-export default App;
