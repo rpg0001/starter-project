@@ -19,7 +19,7 @@ if (error) {
     throw new Error(`Config validation error: ${error.message}`);
 }
 
-module.exports = {
+export const config = {
     DB_HOST: value.DB_HOST,
     DB_USER: value.DB_USER,
     DB_PASSWORD: value.DB_PASSWORD,

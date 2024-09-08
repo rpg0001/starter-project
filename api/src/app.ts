@@ -5,13 +5,15 @@ import mysql from 'mysql2';
 import morgan from 'morgan';
 import NoteRouter from './routers/noteRouter';
 import { logger } from './utils/logger';
+import { config } from './utils/config';
+import { DEFAULT_LOG_LEVEL, DEFAULT_PORT } from './utils/constants';
 const errorHandler = require('./middleware/errorHandler');
 
 // Validate config
 require('./utils/config');
 
 const app = express();
-const port = process.env['PORT'] ?? 8080;
+const port = config.PORT ?? DEFAULT_PORT;
 
 // Middleware
 app.use(express.json())
@@ -23,10 +25,10 @@ app.use(morgan('tiny', {
 
 // Connect to DB
 export const connection = mysql.createPool({
-    host: process.env['DB_HOST'],
-    user: process.env['DB_USER'],
-    password: process.env['DB_PASSWORD'],
-    database: process.env['DB_NAME']
+    host: config.DB_HOST,
+    user: config.DB_USER,
+    password: config.DB_PASSWORD,
+    database: config.DB_NAME,
 }).promise();
 
 // Health check route
@@ -39,4 +41,7 @@ app.use(NoteRouter);
 app.use(errorHandler);
 
 // Start server
-app.listen(port, () => logger.info(`Express is listening at http://localhost:${port}`));
+app.listen(port, () => {
+  logger.info(`Express is listening at http://localhost:${port}`);
+  logger.info(`Log level: ${config.LOG_LEVEL ?? DEFAULT_LOG_LEVEL}`)
+});

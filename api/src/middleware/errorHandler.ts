@@ -1,3 +1,4 @@
+import { config } from "../utils/config";
 import { BaseError, InternalServerError, JsonApiErrorResponse } from "../utils/errors";
 import { logger } from "../utils/logger";
 
@@ -7,7 +8,7 @@ function errorHandler(
     res: any, 
     next: any
 ) {
-    logger.error(process.env.NODE_ENV === 'development' ? err.stack : `Error: ${err.message}`);
+    logger.error(config.NODE_ENV === 'development' ? err.stack : `Error: ${err.message}`);
 
     const baseError: BaseError = err instanceof BaseError
         ? err
