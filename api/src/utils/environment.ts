@@ -1,10 +1,10 @@
+import { logger } from './logger';
+
 /* 
     List of required environment variables
     Add these to your .env file and make sure to add any new ones here
     To view stack traces, set NODE_ENV to development
 */
-
-import { logger } from "./logger";
 
 export const environment: EnvironmentVariable[] = [
     { name: 'DB_HOST', type: 'string' },

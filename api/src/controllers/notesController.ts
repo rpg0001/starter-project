@@ -1,8 +1,7 @@
-import { mapNoteToJsonApiObjectResponse } from '../maps/notesMaps';
-import { Note } from '../models/notesModels';
 import * as Service from '../services/notesService';
+import { Note } from '../models/notesModels';
 import { BadRequestError, NotFoundError } from '../utils/errors';
-import { mapToJsonApiListResponse } from '../utils/successResponses';
+import { JsonApiObjectListResponse } from '../utils/successResponses';
 
 export async function getNote(req: any, res: any, next: any) {
     try {
@@ -12,7 +11,7 @@ export async function getNote(req: any, res: any, next: any) {
         const note = await Service.getNote(req.params.id);
         if (!note) throw new NotFoundError(`Could not find note with id ${id}`);
 
-        res.status(200).json(mapNoteToJsonApiObjectResponse(note));
+        res.status(200).json(note.getJsonApiResponse());
     } catch (error: any) {
         return next(error);
     }
@@ -22,8 +21,8 @@ export async function listNotes(req: any, res: any, next: any) {
     try {
         const notes = await Service.listNotes();
         return res.status(200).json(
-            mapToJsonApiListResponse(
-                notes.map((note: Note) => mapNoteToJsonApiObjectResponse(note))
+            new JsonApiObjectListResponse(
+                notes.map((note: Note) => note.getJsonApiResponse())
             )
         );
     } catch (error: any) {
@@ -40,7 +39,7 @@ export async function createNote(req: any, res: any, next: any) {
         if (!content) throw new BadRequestError('/content');
 
         const note = await Service.createNote(title, content);
-        return res.status(201).json(mapNoteToJsonApiObjectResponse(note));
+        return res.status(201).json(note.getJsonApiResponse());
     } catch (error: any) {
         next(error);
     }
@@ -56,7 +55,7 @@ export async function updateNote(req: any, res: any, next: any) {
         if (!title && !content) throw new BadRequestError('/body');
         
         const note = await Service.updateNote(id, title, content);
-        return res.status(200).json(mapNoteToJsonApiObjectResponse(note));
+        return res.status(200).json(note.getJsonApiResponse());
     } catch (error: any) {
         next(error);
     }

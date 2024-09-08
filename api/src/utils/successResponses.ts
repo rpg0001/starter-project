@@ -1,32 +1,28 @@
-export interface JsonApiObjectResponse {
+export class JsonApiObjectResponse {
     id: string | number;
     type: string;
     attributes: any;
     relationships?: any;
-}
 
-export interface JsonApiObjectListResponse {
-    data: JsonApiObjectResponse[];
-}
-
-export function mapToJsonApiListResponse(
-    items: JsonApiObjectResponse[]
-): JsonApiObjectListResponse {
-    return {
-        data: items
+    constructor(
+        id: string | number, 
+        type: string,
+        attributes: any, 
+        relationships?: any
+    ) {
+        this.id = id;
+        this.type = type;
+        this.attributes = attributes;
+        this.relationships = relationships;
     }
 }
 
-export function mapToJsonApiObjectResponse(
-    id: string | number,
-    type: string,
-    attributes?: any,
-    relationships?: any
-): JsonApiObjectResponse {
-    return {
-        id: id,
-        type: type,
-        attributes: attributes,
-        relationships: relationships
+export class JsonApiObjectListResponse {
+    data: JsonApiObjectResponse[];
+
+    constructor(
+        items: JsonApiObjectResponse[]
+    ) {
+        this.data = items;
     }
 }

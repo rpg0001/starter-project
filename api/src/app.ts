@@ -31,9 +31,7 @@ export const connection = mysql.createPool({
 }).promise();
 
 // Health check route
-app.get('/', (req, res) => {
-  res.status(200).send('OK');
-});
+app.get('/', (req, res) => res.status(200).json('OK'));
 
 // Routers
 app.use(NotesRouter);

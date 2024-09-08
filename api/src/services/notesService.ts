@@ -8,28 +8,27 @@ export async function getNote(
         SELECT * FROM notes WHERE id = ?`
     , [id]);
     const rows = result[0] as any[];
-    return rows[0];
+    const note = rows[0];
+    return new Note(note.id, note.title, note.content);
 }
 
 export async function listNotes(): Promise<Note[]>  {
-    const [rows] = await connection.query(`
+    const [notes] = await connection.query(`
         SELECT * FROM notes
     `);
-    return rows as Note[];
+    return (notes as any[]).map(note => new Note(note.id, note.title, note.content))
 }
 
 export async function createNote(
     title: string, 
     content: string
 ): Promise<Note>  {
-    const [result] = await connection.query(`
+    const [newNote] = await connection.query(`
         INSERT INTO notes (title, content)
         VALUES (?, ?)
     `, [ title, content ]) as any;
 
-    const id = result.insertId;
-    const newNote = await getNote(id);
-    return newNote;
+    return await getNote(newNote.insertId);
 }
 
 export async function updateNote(
@@ -47,8 +46,7 @@ export async function updateNote(
         WHERE id = ?
     `, [newTitle, newContent, id]) as any;
 
-    const updatedNote = await getNote(id);
-    return updatedNote;
+    return await getNote(id);
 }
 
 export async function deleteNote(
