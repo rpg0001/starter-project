@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 import express from 'express';
 import mysql from 'mysql2';
 import morgan from 'morgan';
-import NotesRouter from './routers/notesRouter';
+import NoteRouter from './routers/noteRouter';
 import { validateEnvironment } from './utils/environment';
 import { logger } from './utils/logger';
 const errorHandler = require('./middleware/errorHandler');
@@ -34,7 +34,7 @@ export const connection = mysql.createPool({
 app.get('/', (req, res) => res.status(200).json('OK'));
 
 // Routers
-app.use(NotesRouter);
+app.use(NoteRouter);
 
 // Custom error handler
 app.use(errorHandler);
