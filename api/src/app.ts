@@ -1,18 +1,17 @@
 import dotenv from 'dotenv';
+dotenv.config();
 import express from 'express';
 import mysql from 'mysql2';
 import morgan from 'morgan';
 import NoteRouter from './routers/noteRouter';
-import { validateEnvironment } from './utils/environment';
 import { logger } from './utils/logger';
 const errorHandler = require('./middleware/errorHandler');
 
-// Set up config and log if invalid
-dotenv.config();
-validateEnvironment();
+// Validate config
+require('./utils/config');
 
 const app = express();
-const port = 8080;
+const port = process.env['PORT'] ?? 8080;
 
 // Middleware
 app.use(express.json())
