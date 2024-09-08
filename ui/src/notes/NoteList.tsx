@@ -13,7 +13,7 @@ export default function NoteList() {
     
     return (
         <div>
-            <h2>All notes:</h2>
+            <h1>All notes</h1>
             {notes.map(note => 
                 <>
                     <div>

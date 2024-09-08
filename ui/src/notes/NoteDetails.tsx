@@ -15,9 +15,10 @@ export default function NoteDetails() {
     
     return (
         <div>
+            <h1>View note</h1>
             {note ?
                 <div>
-                    <h1>{note?.attributes.title}</h1>
+                    <h2>{note?.attributes.title}</h2>
                     <p>{note?.attributes.content}</p>
                 </div>
             :
