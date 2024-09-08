@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { createNote } from "./noteService";
+import { createNote } from "./NoteService";
+import './Notes.css';
 
 export function CreateNote() {
     const [title, setTitle] = useState<string>();
@@ -9,10 +10,8 @@ export function CreateNote() {
 
     async function doCreateNote() {
         if (title && content) {
-            const note = await createNote(title, content)
-            if (note) {
-                navigate(`/notes/${note.id}`);
-            }
+            const note = await createNote(title, content);
+            if (note) navigate(`/notes/${note.id}`);
         }
     }
 

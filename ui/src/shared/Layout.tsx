@@ -1,4 +1,5 @@
 import { Outlet, Link } from "react-router-dom";
+import './Layout.css';
 
 export default function Layout() {
   return (
@@ -11,6 +12,9 @@ export default function Layout() {
                     </li>
                     <li>
                         <Link to="/notes">Notes</Link>
+                    </li>
+                    <li>
+                        <Link to="/notes/create">Create Note</Link>
                     </li>
                 </ul>
             </nav>

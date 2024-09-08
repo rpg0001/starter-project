@@ -1,7 +1,8 @@
+import './Notes.css';
 import { useEffect, useState } from "react";
-import { Note } from "./noteModels";
-import { listNotes } from "./noteService";
 import { Link } from "react-router-dom";
+import { Note } from "./NoteModels";
+import { listNotes } from "./NoteService";
 
 export default function NoteList() {
     const [notes, setNotes] = useState<Note[]>([]);
@@ -15,15 +16,15 @@ export default function NoteList() {
         <div>
             <h1>All notes</h1>
             <Link to='create'>Add new note</Link>
-            {notes.map(note => 
-                <>
-                    <div>
+            <div className='note-list'>
+                {notes.map(note => 
+                    <div className='note'>
                         <h3>{note.attributes.title}</h3>
                         <p>{note.attributes.content}</p>
                         <Link to={`${note.id}`} >view note</Link>
                     </div>
-                </>
-            )}
+                )}
+            </div>
         </div>
     )
 }

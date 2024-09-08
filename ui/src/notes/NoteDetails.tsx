@@ -1,7 +1,8 @@
 import { useParams } from "react-router-dom";
-import { Note } from "./noteModels";
+import { Note } from "./NoteModels";
 import { useEffect, useState } from "react";
-import { getNote } from "./noteService";
+import { getNote } from "./NoteService";
+import './Notes.css';
 
 export default function NoteDetails() {
     const { id } = useParams();
@@ -17,7 +18,7 @@ export default function NoteDetails() {
         <div>
             <h1>View note</h1>
             {note ?
-                <div>
+                <div className='note'>
                     <h2>{note?.attributes.title}</h2>
                     <p>{note?.attributes.content}</p>
                 </div>

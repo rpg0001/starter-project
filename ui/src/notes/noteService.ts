@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Note } from "./noteModels";
+import { Note } from "./NoteModels";
 
 const baseUrl = "http://localhost:8080";
 
