@@ -3,6 +3,7 @@ dotenv.config();
 import express from 'express';
 import mysql from 'mysql2';
 import morgan from 'morgan';
+import cors from 'cors';
 import NoteRouter from './routers/noteRouter';
 import { logger } from './utils/logger';
 import { config } from './utils/config';
@@ -16,7 +17,8 @@ const app = express();
 const port = config.PORT ?? DEFAULT_PORT;
 
 // Middleware
-app.use(express.json())
+if (config.NODE_ENV === 'development') app.use(cors());
+app.use(express.json());
 app.use(morgan('tiny', { 
   stream: { 
     write: (message: string) => logger.http(message.trim()) 
