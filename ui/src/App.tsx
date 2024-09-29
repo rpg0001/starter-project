@@ -5,6 +5,7 @@ import Home from "./home/Home";
 import Layout from "./shared/Layout";
 import NoteDetails from "./notes/NoteDetails";
 import { CreateNote } from "./notes/CreateNote";
+import EditNote from "./notes/EditNote";
 
 export default function App() {
   return (
@@ -15,6 +16,7 @@ export default function App() {
             <Route path="notes" element={<NoteList />} />
             <Route path="notes/:id" element={<NoteDetails />} />
             <Route path="notes/create" element={<CreateNote />} />
+            <Route path="notes/:id/edit" element={<EditNote />} />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>

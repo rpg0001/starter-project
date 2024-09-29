@@ -23,7 +23,7 @@ export default function NoteDetails() {
                         <p>{note?.attributes.content}</p>
                     </div>
                     <div className='flex flex-row gap-2'>
-                        <Link to={`${note.id}/edit`} >edit</Link>
+                        <Link to={`edit`} >edit</Link>
                         |
                         <Link to={`${note.id}/delete`} >delete</Link>
                     </div>
