@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import NoteList from "./notes/NoteList";
-import NotFound from "./general/NotFound";
+import NotFound from "./errors/NotFound";
 import Home from "./home/Home";
 import Layout from "./shared/Layout";
 import NoteDetails from "./notes/NoteDetails";

@@ -1,7 +1,6 @@
 import { useParams } from "react-router-dom";
-import { Note } from "./NoteModels";
 import { useEffect, useState } from "react";
-import { getNote } from "./NoteService";
+import { getNote, Note } from "../services/notes";
 import './Notes.css';
 
 export default function NoteDetails() {

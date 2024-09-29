@@ -1,5 +1,12 @@
 import axios from "axios";
-import { Note } from "./NoteModels";
+
+export interface Note {
+    id: number;
+    attributes: {
+        title: string;
+        content: string;
+    }
+}
 
 const baseUrl = "http://localhost:8080";
 

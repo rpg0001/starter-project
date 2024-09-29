@@ -1,8 +1,7 @@
 import './Notes.css';
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Note } from "./NoteModels";
-import { listNotes } from "./NoteService";
+import { listNotes, Note } from "../services/notes";
 
 export default function NoteList() {
     const [notes, setNotes] = useState<Note[]>([]);
