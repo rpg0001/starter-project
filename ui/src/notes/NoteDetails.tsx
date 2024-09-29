@@ -15,6 +15,7 @@ export default function NoteDetails() {
     
     return (
         <div>
+            <Link to='/notes' >Back to note list</Link>
             <h1>View note</h1>
             {note ?
                 <>
