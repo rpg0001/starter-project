@@ -14,7 +14,7 @@ export async function getNote(req: any, res: any, next: any) {
 
         res.status(200).json(note.getJsonApiResponse());
     } catch (error: any) {
-        return next(error);
+        next(error);
     }
 }
 

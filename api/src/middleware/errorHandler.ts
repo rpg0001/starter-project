@@ -14,7 +14,9 @@ function errorHandler(
         ? err
         : new InternalServerError();
 
-    return res.status(baseError.status).json(new JsonApiErrorResponse([baseError]));
+    return res
+        .status(baseError.status)
+        .json(new JsonApiErrorResponse([baseError]));
 }
 
 module.exports = errorHandler;
