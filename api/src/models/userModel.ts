@@ -1,4 +1,4 @@
-import { JsonApiObjectResponse } from "../utils/successResponses";
+import { JsonApiResource } from "../utils/jsonApi";
 
 export class User {
     id: number;
@@ -12,8 +12,8 @@ export class User {
     }
 
     getJsonApiResponse() {
-        return new JsonApiObjectResponse(
-            this.id, 
+        return new JsonApiResource(
+            String(this.id), 
             'users', 
             {
                 email: this.email,

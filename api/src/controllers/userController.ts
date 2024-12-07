@@ -1,7 +1,7 @@
 
 import { User } from '../models/userModel';
 import { BadRequestError, NotFoundError } from '../utils/errors';
-import { JsonApiObjectListResponse } from '../utils/successResponses';
+import { JsonApiResourceList } from '../utils/jsonApi';
 import * as UserService from '../services/userService';
 
 export async function getUser(req: any, res: any, next: any) {
@@ -22,7 +22,7 @@ export async function listUsers(req: any, res: any, next: any) {
     try {
         const users = await UserService.listUsers();
         return res.status(200).json(
-            new JsonApiObjectListResponse(
+            new JsonApiResourceList(
                 users.map((user: User) => user.getJsonApiResponse())
             )
         );

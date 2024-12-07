@@ -1,7 +1,7 @@
 
 import { Note } from '../models/noteModel';
 import { BadRequestError, NotFoundError } from '../utils/errors';
-import { JsonApiObjectListResponse } from '../utils/successResponses';
+import { JsonApiResourceList } from '../utils/jsonApi';
 import * as NoteService from '../services/noteService';
 
 export async function getNote(req: any, res: any, next: any) {
@@ -12,7 +12,7 @@ export async function getNote(req: any, res: any, next: any) {
 
         const note = await NoteService.getNote(req.params.id);
         if (!note) throw new NotFoundError(`Could not find note with id ${id}`);
-        res.status(200).json(note.getJsonApiResponse());
+        res.status(200).json(note.getJsonApiResponse(true));
     } catch (error: any) {
         next(error);
     }
@@ -22,8 +22,8 @@ export async function listNotes(req: any, res: any, next: any) {
     try {
         const notes = await NoteService.listNotes();
         return res.status(200).json(
-            new JsonApiObjectListResponse(
-                notes.map((note: Note) => note.getJsonApiResponse())
+            new JsonApiResourceList(
+                notes.map((note: Note) => note.getJsonApiResponse(true))
             )
         );
     } catch (error: any) {
@@ -40,7 +40,7 @@ export async function createNote(req: any, res: any, next: any) {
         if (!content) throw new BadRequestError('/body/attributes/content', 'missing required field: content');
 
         const note = await NoteService.createNote(title, content);
-        return res.status(201).json(note?.getJsonApiResponse() ?? {});
+        return res.status(201).json(note?.getJsonApiResponse(true) ?? {});
     } catch (error: any) {
         next(error);
     }
@@ -58,7 +58,7 @@ export async function updateNote(req: any, res: any, next: any) {
         if (content && content.length > 1023) throw new BadRequestError('/body/attributes/content', 'content must be 1023 characters or less');
 
         const note = await NoteService.updateNote(id, title, content);
-        return res.status(200).json(note?.getJsonApiResponse() ?? {});
+        return res.status(200).json(note?.getJsonApiResponse(true) ?? {});
     } catch (error: any) {
         next(error);
     }

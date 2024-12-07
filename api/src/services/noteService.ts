@@ -10,14 +10,14 @@ export async function getNote(
     , [id]);
     const rows = result[0] as any[];
     const note = rows[0];
-    return note ? new Note(note.id, note.title, note.content) : null;
+    return note ? new Note(note.id, note.title, note.content, note.user_id) : null;
 }
 
 export async function listNotes(): Promise<Note[]>  {
     const [notes] = await connection.query(`
         SELECT * FROM notes
     `);
-    return (notes as any[]).map(note => new Note(note.id, note.title, note.content))
+    return (notes as any[]).map(note => new Note(note.id, note.title, note.content, note.user_id))
 }
 
 export async function createNote(
