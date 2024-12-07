@@ -1,5 +1,5 @@
 
-import { Note } from '../models/noteModels';
+import { Note } from '../models/noteModel';
 import { BadRequestError, NotFoundError } from '../utils/errors';
 import { JsonApiObjectListResponse } from '../utils/successResponses';
 import * as NoteService from '../services/noteService';

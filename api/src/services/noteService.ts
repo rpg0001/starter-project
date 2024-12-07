@@ -1,5 +1,5 @@
 import { connection } from "../app";
-import { Note } from "../models/noteModels";
+import { Note } from "../models/noteModel";
 import { NotFoundError } from "../utils/errors";
 
 export async function getNote(
