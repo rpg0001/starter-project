@@ -1,6 +1,7 @@
 import { connection } from "../app";
 import { Note } from "../models/noteModel";
 import { NotFoundError } from "../utils/errors";
+import { getUser } from "./userService";
 
 export async function getNote(
     id: number
@@ -22,12 +23,17 @@ export async function listNotes(): Promise<Note[]>  {
 
 export async function createNote(
     title: string, 
-    content: string
+    content: string,
+    userId: number
 ): Promise<Note | null>  {
+    const user = await getUser(userId);
+
+    if (!user) throw new NotFoundError(`Could not find user with id ${userId}`);
+
     const [newNote] = await connection.query(`
-        INSERT INTO notes (title, content)
-        VALUES (?, ?)
-    `, [ title, content ]) as any;
+        INSERT INTO notes (title, content, user_id)
+        VALUES (?, ?, ?)
+    `, [ title, content, userId ]) as any;
 
     return await getNote(newNote.insertId) ?? null;
 }

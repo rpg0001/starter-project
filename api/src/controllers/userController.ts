@@ -36,8 +36,8 @@ export async function createUser(req: any, res: any, next: any) {
         const email = req.body?.attributes?.email;
         const username = req.body?.attributes?.username;
 
-        if (!email) throw new BadRequestError('/body/attributes/email', 'missing required field: email');
-        if (!username) throw new BadRequestError('/body/attributes/username', 'missing required field: username');
+        if (!email) throw new BadRequestError('/body/attributes/email', 'missing required field');
+        if (!username) throw new BadRequestError('/body/attributes/username', 'missing required field');
         if (username.length > 23) throw new BadRequestError('/body/attributes/username', 'username must be 23 characters or less');
         if (email.length > 255) throw new BadRequestError('/body/attributes/email', 'email must be 255 characters or less');
         if (!email.includes("@")) throw new BadRequestError('/body/attributes/email', 'email must contain "@"'); // TODO regexes

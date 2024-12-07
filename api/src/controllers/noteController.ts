@@ -35,11 +35,15 @@ export async function createNote(req: any, res: any, next: any) {
     try {
         const title = req.body?.attributes?.title;
         const content = req.body?.attributes?.content;
+        const userIdString = req.body?.relationships?.user?.data?.id;
 
-        if (!title) throw new BadRequestError('/body/attributes/title', 'missing required field: title');
-        if (!content) throw new BadRequestError('/body/attributes/content', 'missing required field: content');
+        if (!title) throw new BadRequestError('/body/attributes/title', 'missing required field');
+        if (!content) throw new BadRequestError('/body/attributes/content', 'missing required field');
+        if (!userIdString) throw new BadRequestError('/body/relationships/user/data/id', 'missing required field');
+        const userId = Number(userIdString);
+        if (isNaN(userId)) throw new BadRequestError('/body/relationships/user/data/id', 'user id must be a number');
 
-        const note = await NoteService.createNote(title, content);
+        const note = await NoteService.createNote(title, content, userId);
         return res.status(201).json(note?.getJsonApiResponse(true) ?? {});
     } catch (error: any) {
         next(error);
