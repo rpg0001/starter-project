@@ -5,6 +5,7 @@ import mysql from 'mysql2';
 import morgan from 'morgan';
 import cors from 'cors';
 import NoteRouter from './routers/noteRouter';
+import UserRouter from './routers/userRouter';
 import { logger } from './utils/logger';
 import { config } from './utils/config';
 import { DEFAULT_LOG_LEVEL, DEFAULT_PORT } from './utils/constants';
@@ -38,6 +39,7 @@ app.get('/', (req, res) => res.status(200).json('OK'));
 
 // Routers
 app.use(NoteRouter);
+app.use(UserRouter);
 
 // Custom error handler
 app.use(errorHandler);

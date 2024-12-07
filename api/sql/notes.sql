@@ -8,7 +8,7 @@ DROP TABLE IF EXISTS users;
 CREATE TABLE users (
     id int PRIMARY KEY UNIQUE NOT NULL AUTO_INCREMENT,
     email varchar(255) NOT NULL,
-    username varchar(16) NOT NULL
+    username varchar(23) NOT NULL
 );
 
 CREATE TABLE notes (
