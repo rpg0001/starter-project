@@ -14,10 +14,20 @@ export async function getNote(
     return note ? new Note(note.id, note.title, note.content, note.user_id) : null;
 }
 
-export async function listNotes(): Promise<Note[]>  {
-    const [notes] = await connection.query(`
-        SELECT * FROM notes
-    `);
+export async function listNotes(userId: number | null): Promise<Note[]>  {
+    let notes;
+    if (userId === null) {
+        const [dbNotes] = await connection.query(`
+            SELECT * FROM notes
+        `);
+        notes = dbNotes;
+    } else {
+        const [dbNotes] = await connection.query(`
+            SELECT * FROM notes
+            WHERE user_id = ?
+        `, [ userId ]);
+        notes = dbNotes;
+    }
     return (notes as any[]).map(note => new Note(note.id, note.title, note.content, note.user_id))
 }
 

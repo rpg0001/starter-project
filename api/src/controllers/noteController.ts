@@ -20,7 +20,11 @@ export async function getNote(req: any, res: any, next: any) {
 
 export async function listNotes(req: any, res: any, next: any) {
     try {
-        const notes = await NoteService.listNotes();
+        const userIdString = req.query?.userId;
+        const userId = userIdString;
+        if (userIdString && isNaN(userId)) throw new BadRequestError('/userId', 'userId must be a number');
+
+        const notes = await NoteService.listNotes(userIdString ? userId : null);
         return res.status(200).json(
             new JsonApiResourceList(
                 notes.map((note: Note) => note.getJsonApiResponse(true))
