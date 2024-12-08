@@ -51,8 +51,8 @@ export async function createNote(req: any, res: any, next: any) {
 export async function updateNote(req: any, res: any, next: any) {
     try {
         const id = Number(req.params.id);
-        const title = req.body?.attributes?.title;
-        const content = req.body?.attributes?.content;
+        const title = req.body?.title;
+        const content = req.body?.content;
 
         if (isNaN(id)) throw new BadRequestError('/id', 'id must be a number');
         if (!title && !content) throw new BadRequestError('/body', 'missing required field: title, content');
