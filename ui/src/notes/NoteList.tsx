@@ -18,8 +18,8 @@ export default function NoteList() {
             <div className='note-list'>
                 {notes.map(note => 
                     <div className='note'>
-                        <h3>{note.attributes.title}</h3>
-                        <p>{note.attributes.content}</p>
+                        <h3>{note.title}</h3>
+                        <p>{note.content}</p>
                         <Link to={`${note.id}`} >view note</Link>
                     </div>
                 )}

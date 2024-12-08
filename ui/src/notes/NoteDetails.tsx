@@ -20,13 +20,13 @@ export default function NoteDetails() {
             {note ?
                 <>
                     <div className='note'>
-                        <h2>{note?.attributes.title}</h2>
-                        <p>{note?.attributes.content}</p>
+                        <h2>{note?.title}</h2>
+                        <p>{note?.content}</p>
                     </div>
                     <div className='flex flex-row gap-2'>
                         <Link to={`edit`} >edit</Link>
                         |
-                        <Link to={`${note.id}/delete`} >delete</Link>
+                        <Link to={`delete`} >delete</Link> {/* TODO note deletion */}
                     </div>
                 </>
             :

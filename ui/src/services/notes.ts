@@ -2,10 +2,9 @@ import axios from "axios";
 
 export interface Note {
     id: number;
-    attributes: {
-        title: string;
-        content: string;
-    }
+    title: string;
+    content: string;
+    userId: number;
 }
 
 const baseUrl = "http://localhost:8080";
@@ -19,16 +18,18 @@ export async function getNote(
 
 export async function listNotes(): Promise<Note[]> {
     const response = await axios.get(`${baseUrl}/notes`);
-    return response.data.data as Note[];
+    return response.data as Note[];
 }
 
 export async function createNote(
     title: string, 
-    content: string
+    content: string,
+    userId: number
 ): Promise<Note> {
     const requestBody = {
         title: title,
-        content: content
+        content: content,
+        userId: userId
     }
     const response = await axios.post(`${baseUrl}/notes`, requestBody);
     return response.data as Note;

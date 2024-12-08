@@ -10,7 +10,7 @@ export function CreateNote() {
 
     async function doCreateNote() {
         if (title && content) {
-            const note = await createNote(title, content);
+            const note = await createNote(title, content, 3); // TODO provide user id
             if (note) navigate(`/notes/${note.id}`);
         }
     }

@@ -15,8 +15,8 @@ export default function EditNote() {
     }, [id]);
     
     useEffect(() => {
-        setTitle(note?.attributes.title);
-        setContent(note?.attributes.content);
+        setTitle(note?.title);
+        setContent(note?.content);
     }, [note])
 
     async function doUpdateNote() {
