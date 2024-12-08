@@ -15,8 +15,6 @@ test('should create, fetch and delete a user', async ({ request }) => {
   // Assert
   expect(createUserResponse.status()).toBe(201);
   const createUserResponseBody = await createUserResponse.json();
-  console.log(createUserResponse);
-  console.log(createUserResponseBody);
   expect(Number(createUserResponseBody.id)).not.toBeNaN();
   expect(createUserResponseBody.email).toBe(createUserRequestBody.email);
   expect(createUserResponseBody.username).toBe(createUserRequestBody.username);
@@ -33,8 +31,6 @@ test('should create, fetch and delete a user', async ({ request }) => {
   // Assert
   expect(getUserResponse.status()).toBe(200);
   const getUserResponseBody = await getUserResponse.json();
-  console.log(getUserResponse);
-  console.log(getUserResponseBody);
   expect(Number(getUserResponseBody.id)).toBe(userId);
   expect(getUserResponseBody.email).toBe(createUserRequestBody.email);
   expect(getUserResponseBody.username).toBe(createUserRequestBody.username);
