@@ -23,20 +23,22 @@ export async function listUsers(): Promise<User[]>  {
 export async function createUser(
     email: string, 
     username: string
-): Promise<User | null>  {
+): Promise<User>  {
     const [newUser] = await connection.query(`
         INSERT INTO users (email, username)
         VALUES (?, ?)
     `, [ email, username ]) as any;
 
-    return await getUser(newUser.insertId) ?? null;
+    const fullNewUser = await getUser(newUser.insertId);
+    if (!fullNewUser) throw new Error("Failed to retrieve newly created user with id " + newUser.insertId);
+    return fullNewUser;
 }
 
 export async function updateUser(
     id: number, 
     email: string, 
     username: string
-): Promise<User | null>  {
+): Promise<User>  {
     const user = await getUser(id);
 
     if (!user) throw new NotFoundError(`Could not find user with id ${id}`);
@@ -50,12 +52,17 @@ export async function updateUser(
         WHERE id = ?
     `, [newEmail, newUsername, id]) as any;
 
-    return await getUser(id) ?? null;
+    const updatedUser = await getUser(id);
+    if (!updatedUser) throw new Error("Failed to retrieve newly updated user with id " + id);
+    return updatedUser;
 }
 
 export async function deleteUser(
     id: number
 ) {
+    const user = await getUser(id);
+    if (!user) throw new NotFoundError(`No user found with id ${id}`);
+
     await connection.query(`
         DELETE FROM users
         WHERE id = ?

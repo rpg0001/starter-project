@@ -1,5 +1,5 @@
 import { config } from "../utils/config";
-import { BadRequestError, BaseError, InternalServerError, JsonApiErrorResponse } from "../utils/errors";
+import { BadRequestError, BaseError, ErrorResponse, InternalServerError, NotFoundError } from "../utils/errors";
 import { logger } from "../utils/logger";
 
 function errorHandler(
@@ -9,11 +9,8 @@ function errorHandler(
     next: any
 ) {
     try {
-        if (err instanceof BadRequestError) {
-            logger.warn(`Bad request: ${err.message}`);
-        } else { 
-            logger.error(config.NODE_ENV === 'development' ? err.stack : `Error: ${err.message}`);
-        }
+        
+        logger.error(config.NODE_ENV === 'development' ? err.stack : `Error: ${err.message}`);
     
         const baseError: BaseError = err instanceof BaseError
             ? err
@@ -21,13 +18,13 @@ function errorHandler(
     
         return res
             .status(baseError.status)
-            .json(new JsonApiErrorResponse([baseError]));
+            .json(new ErrorResponse(baseError));
     } catch (error: any) {
         console.error("Error handling error: " + error.message);
         const baseError = new InternalServerError();
         return res
             .status(500)
-            .json(new JsonApiErrorResponse([baseError]));
+            .json(new ErrorResponse(baseError));
     }
 }
 

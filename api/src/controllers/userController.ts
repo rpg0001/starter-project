@@ -1,7 +1,5 @@
 
-import { User } from '../models/userModel';
 import { BadRequestError, NotFoundError } from '../utils/errors';
-import { JsonApiResourceList } from '../utils/jsonApi';
 import * as UserService from '../services/userService';
 
 export async function getUser(req: any, res: any, next: any) {
@@ -12,7 +10,7 @@ export async function getUser(req: any, res: any, next: any) {
 
         const user = await UserService.getUser(req.params.id);
         if (!user) throw new NotFoundError(`Could not find user with id ${id}`);
-        res.status(200).json(user.getJsonApiResponse());
+        res.status(200).json(user);
     } catch (error: any) {
         next(error);
     }
@@ -21,11 +19,7 @@ export async function getUser(req: any, res: any, next: any) {
 export async function listUsers(req: any, res: any, next: any) {
     try {
         const users = await UserService.listUsers();
-        return res.status(200).json(
-            new JsonApiResourceList(
-                users.map((user: User) => user.getJsonApiResponse())
-            )
-        );
+        return res.status(200).json(users);
     } catch (error: any) {
         next(error);
     }
@@ -33,17 +27,18 @@ export async function listUsers(req: any, res: any, next: any) {
 
 export async function createUser(req: any, res: any, next: any) {
     try {
-        const email = req.body?.attributes?.email;
-        const username = req.body?.attributes?.username;
+        const email = req.body?.email;
+        const username = req.body?.username;
 
-        if (!email) throw new BadRequestError('/body/attributes/email', 'missing required field');
-        if (!username) throw new BadRequestError('/body/attributes/username', 'missing required field');
-        if (username.length > 23) throw new BadRequestError('/body/attributes/username', 'username must be 23 characters or less');
-        if (email.length > 255) throw new BadRequestError('/body/attributes/email', 'email must be 255 characters or less');
-        if (!email.includes("@")) throw new BadRequestError('/body/attributes/email', 'email must contain "@"'); // TODO regexes
+        if (!email) throw new BadRequestError('/body/email', 'missing required field');
+        if (!username) throw new BadRequestError('/body/username', 'missing required field');
+        if (username.length > 23) throw new BadRequestError('/body/username', 'username must be 23 characters or less');
+        if (email.length > 255) throw new BadRequestError('/body/email', 'email must be 255 characters or less');
+        if (!email.includes("@")) throw new BadRequestError('/body/email', 'email must contain "@"'); // TODO regexes
 
         const user = await UserService.createUser(email, username);
-        return res.status(201).json(user?.getJsonApiResponse() ?? {});
+
+        return res.status(201).json(user);
     } catch (error: any) {
         next(error);
     }
@@ -52,17 +47,17 @@ export async function createUser(req: any, res: any, next: any) {
 export async function updateUser(req: any, res: any, next: any) {
     try {
         const id = Number(req.params.id);
-        const email = req.body?.attributes?.email;
-        const username = req.body?.attributes?.username;
+        const email = req.body?.email;
+        const username = req.body?.username;
 
         if (isNaN(id)) throw new BadRequestError('/id', 'id must be a number');
-        if (!email && !username) throw new BadRequestError('/body/attributes', 'missing required field: email, username');
-        if (username && username.length > 23) throw new BadRequestError('/body/attributes/username', 'username must be 23 characters or less');
-        if (email && email.length > 255) throw new BadRequestError('/body/attributes/email', 'email must be 255 characters or less');
-        if (email && !email.includes("@")) throw new BadRequestError('/body/attributes/email', 'email must contain "@"');
+        if (!email && !username) throw new BadRequestError('/body', 'missing required field: email, username');
+        if (username && username.length > 23) throw new BadRequestError('/body/username', 'username must be 23 characters or less');
+        if (email && email.length > 255) throw new BadRequestError('/body/email', 'email must be 255 characters or less');
+        if (email && !email.includes("@")) throw new BadRequestError('/body/email', 'email must contain "@"');
 
         const user = await UserService.updateUser(id, email, username);
-        return res.status(200).json(user?.getJsonApiResponse() ?? {});
+        return res.status(200).json(user);
     } catch (error: any) {
         next(error);
     }

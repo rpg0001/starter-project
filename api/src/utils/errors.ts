@@ -1,24 +1,20 @@
-// JSON API compliant error response
-export class JsonApiErrorResponse {
-    errors: BaseError[];
-    constructor(errors: BaseError[]) {
-        this.errors = errors;
+export class ErrorResponse {
+    error: BaseError;
+    constructor(error: BaseError) {
+        this.error = error;
     }
 }
 
-// JSON API compliant base error
 export class BaseError extends Error {
     status: number;
     code: string;
-    meta: {
-        timestamp: string;
-    };
+    timestamp: string;
 
     constructor(status: number, code: string, message?: string) {
         super(message);
         this.status = status;
         this.code = code;
-        this.meta = { timestamp: new Date().toISOString() };
+        this.timestamp = new Date().toISOString();
     }
 }
 

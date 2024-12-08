@@ -5,6 +5,7 @@ USE notes_app;
 DROP TABLE IF EXISTS notes;
 DROP TABLE IF EXISTS users;
 
+-- TODO unique email/usernames
 CREATE TABLE users (
     id int PRIMARY KEY UNIQUE NOT NULL AUTO_INCREMENT,
     email varchar(255) NOT NULL,
