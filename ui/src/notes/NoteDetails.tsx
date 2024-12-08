@@ -1,9 +1,10 @@
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { getNote, Note } from "../services/notes";
+import { deleteNote, getNote, Note } from "../services/notes";
 import './Notes.css';
 
 export default function NoteDetails() {
+    const navigate = useNavigate();
     const { id } = useParams();
 
     const [note, setNote] = useState<Note>();
@@ -12,6 +13,11 @@ export default function NoteDetails() {
         const fetchNote = async () => setNote(await getNote(Number(id)));
         fetchNote();
     }, [id]);
+
+    async function doDeleteNote() {
+        await deleteNote(parseInt(id ?? ""));
+        navigate(`/notes`);
+    }
     
     return (
         <div>
@@ -26,7 +32,7 @@ export default function NoteDetails() {
                     <div className='flex flex-row gap-2'>
                         <Link to={`edit`} >edit</Link>
                         |
-                        <Link to={`delete`} >delete</Link> {/* TODO note deletion */}
+                        <a href="#" onClick={doDeleteNote}>delete</a>
                     </div>
                 </>
             :
