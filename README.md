@@ -1,3 +1,3 @@
 # Notes app
-Run `npm i` then `npm start` in /api and in /ui.
-No tests at time of writing.
+- To run app, run `npm i` then `npm start` in /api and in /ui.
+- To run api playwright tests, run `npm test-pw` in /api.
