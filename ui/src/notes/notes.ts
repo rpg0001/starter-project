@@ -1,4 +1,5 @@
 import axios from "axios";
+import { baseUrl } from "../shared/constants";
 
 export interface Note {
     id: number;
@@ -6,8 +7,6 @@ export interface Note {
     content: string;
     userId: number;
 }
-
-const baseUrl = "http://localhost:8080";
 
 export async function getNote(
     id: number
