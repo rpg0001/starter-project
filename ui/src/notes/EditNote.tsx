@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Note, getNote, updateNote } from "../services/notes";
+import { Note, getNote, updateNote } from "./notes";
 
 export default function EditNote() {
     const navigate = useNavigate();

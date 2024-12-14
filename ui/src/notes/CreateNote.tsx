@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { createNote } from "../services/notes";
-import './Notes.css';
+import { createNote } from "./notes";
+import './notes.css';
 
 export function CreateNote() {
     const [title, setTitle] = useState<string>();
