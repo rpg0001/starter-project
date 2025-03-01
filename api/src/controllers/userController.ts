@@ -25,25 +25,6 @@ export async function listUsers(req: any, res: any, next: any) {
     }
 }
 
-export async function createUser(req: any, res: any, next: any) {
-    try {
-        const email = req.body?.email;
-        const username = req.body?.username;
-
-        if (!email) throw new BadRequestError('/body/email', 'missing required field');
-        if (!username) throw new BadRequestError('/body/username', 'missing required field');
-        if (username.length > 23) throw new BadRequestError('/body/username', 'username must be 23 characters or less');
-        if (email.length > 255) throw new BadRequestError('/body/email', 'email must be 255 characters or less');
-        if (!email.includes("@")) throw new BadRequestError('/body/email', 'email must contain "@"'); // TODO regexes
-
-        const user = await UserService.createUser(email, username);
-
-        return res.status(201).json(user);
-    } catch (error: any) {
-        next(error);
-    }
-}
-
 export async function updateUser(req: any, res: any, next: any) {
     try {
         const id = Number(req.params.id);

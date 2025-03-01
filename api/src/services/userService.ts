@@ -1,6 +1,7 @@
 import { connection } from "../app";
 import { User } from "../models/userModel";
 import { NotFoundError } from "../utils/errors";
+import bcrypt from 'bcryptjs';
 
 export async function getUser(
     id: number
@@ -10,24 +11,49 @@ export async function getUser(
     , [id]);
     const rows = result[0] as any[];
     const user = rows[0];
-    return user ? new User(user.id, user.email, user.username) : null;
+    return user ? new User(user.id, user.email, user.username, user.password_hash) : null;
 }
 
 export async function listUsers(): Promise<User[]>  {
     const [users] = await connection.query(`
         SELECT * FROM users
     `);
-    return (users as any[]).map(user => new User(user.id, user.email, user.username))
+    return (users as any[]).map(user => new User(user.id, user.email, user.username, user.password_hash))
+}
+
+export async function searchUsers(username?: string, email?: string): Promise<User[]>  {
+    if (username && email) {
+        const [users] = await connection.query(`
+            SELECT * FROM users WHERE email = ? OR username = ?
+        `, [username, email]);
+        return (users as any[]).map(user => new User(user.id, user.email, user.username, user.password_hash))
+    } else if (username) {
+        const [users] = await connection.query(`
+            SELECT * FROM users WHERE username = ?
+        `, [username]);
+        return (users as any[]).map(user => new User(user.id, user.email, user.username, user.password_hash))
+    } else if (email) {
+        const [users] = await connection.query(`
+            SELECT * FROM users WHERE email = ?
+        `, [email]);
+        return (users as any[]).map(user => new User(user.id, user.email, user.username, user.password_hash))
+    } else {
+        return [];
+    }
 }
 
 export async function createUser(
     email: string, 
-    username: string
+    username: string,
+    password: string
 ): Promise<User>  {
+    const salt = await bcrypt.genSalt(10)
+    const passwordHash = await bcrypt.hash(password, salt)
+
     const [newUser] = await connection.query(`
-        INSERT INTO users (email, username)
-        VALUES (?, ?)
-    `, [ email, username ]) as any;
+        INSERT INTO users (email, username, password_hash)
+        VALUES (?, ?, ?)
+    `, [ email, username, passwordHash ]) as any;
 
     const fullNewUser = await getUser(newUser.insertId);
     if (!fullNewUser) throw new Error("Failed to retrieve newly created user with id " + newUser.insertId);

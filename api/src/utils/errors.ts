@@ -40,3 +40,9 @@ export class BadRequestError extends BaseError {
         this.source = { pointer: pointer };
     }
 }
+
+export class UnauthorizedError extends BaseError {
+    constructor(message?: string) {
+        super(401, 'UNAUTHORIZED', message)
+    }
+}

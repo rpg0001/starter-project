@@ -1,0 +1,148 @@
+import { BadRequestError, NotFoundError, UnauthorizedError } from "../utils/errors";
+import * as UserService from "../services/userService";
+import * as UserSessionService from "../services/userSessionService";
+import { validateEmail, validateNewPassword, validateUsername } from "../utils/validation";
+import bcrypt from 'bcryptjs';
+
+export async function signUp(req: any, res: any, next: any) {
+    try {
+        const email = req.body?.email;
+        const username = req.body?.username;
+        const password = req.body?.password;
+
+        // Validate request properties
+        validateEmail(email);
+        validateUsername(username);
+        validateNewPassword(password);
+
+        // Check user doesn't exist
+        const existingUsers = await UserService.searchUsers(username, email);
+        if (existingUsers.length > 0) {
+            throw new BadRequestError('/body', 'User already exists');
+        }
+
+        // Create new user
+        const user = await UserService.createUser(email, username, password);
+
+        // Create new user session
+        const newSession = await UserSessionService.createUserSession(user.id);
+
+        // Set session cookie
+        res.cookie("session", newSession.token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            expires: newSession.expiresAt,
+        });
+
+        // Return user details
+        res.status(201).json({
+            id: user.id,
+            email: user.email,
+            username: user.username
+        });
+    } catch (error: any) {
+        next(error);
+    }
+}
+
+export async function signIn(req: any, res: any, next: any) {
+    try {
+        const email = req.body?.email;
+        const password = req.body?.password;
+
+        // Validate request properties
+        if (!password) throw new BadRequestError('/body/password', 'missing required field');
+        validateEmail(email);
+
+        // Find user
+        const users = await UserService.searchUsers(undefined, email);
+        
+        if (users.length > 1) {
+            throw new Error("More than one user found with email")
+        }
+
+        if (users.length < 1) {
+            throw new UnauthorizedError("User does not exist");
+        }
+
+        const user = users[0];
+
+        // Verify password
+        const passwordIsValid = await bcrypt.compare(password, user.passwordHash);
+
+        if (!passwordIsValid) {
+            throw new UnauthorizedError("Incorrect credentials provided");
+        }
+
+        // Create new user session
+        const newSession = await UserSessionService.createUserSession(user.id);
+
+        // Set session cookie
+        res.cookie("session", newSession.token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            expires: newSession.expiresAt,
+        });
+
+        // Return user details
+        res.status(201).json({
+            id: user.id,
+            email: user.email,
+            username: user.username
+        });
+    } catch (error: any) {
+        next(error);
+    }
+}
+
+export async function signOut(req: any, res: any, next: any) {
+    try {
+        const token = req.cookies.session
+
+        if (!token) {
+            throw new BadRequestError("User is not logged in");
+        }
+
+        // Delete session
+        UserSessionService.deleteUserSession(token)
+        res.clearCookie("session");
+
+        // Return user details
+        res.status(204);
+    } catch (error: any) {
+        next(error);
+    }
+}
+
+export async function getMe(req: any, res: any, next: any) {
+    try {
+        const token = req.cookies.session
+
+        if (!token) {
+            throw new BadRequestError("User is not logged in");
+        }
+
+        const session = await UserSessionService.getUserSession(token);
+
+        if (!session || session.expiresAt < new Date()) {
+            res.clearCookie("session");
+            throw new UnauthorizedError("Invalid session");
+        }
+
+        const user = await UserService.getUser(session.userId);
+
+        if (!user) { 
+            throw new NotFoundError("User associated with session not found");
+        }
+
+        res.json({
+            id: user.id,
+            email: user.email,
+            username: user.username
+        })
+    } catch (error: any) {
+        next(error);
+    }
+}
