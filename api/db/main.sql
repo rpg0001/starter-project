@@ -7,24 +7,25 @@ DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS user_sessions;
 
 CREATE TABLE users (
-    id int PRIMARY KEY UNIQUE NOT NULL AUTO_INCREMENT,
-    email varchar(255) UNIQUE NOT NULL,
-    username varchar(23) UNIQUE NOT NULL,
-    password_hash varchar(255) NOT NULL
+    id INT PRIMARY KEY UNIQUE NOT NULL AUTO_INCREMENT,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    username VARCHAR(23) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    user_type ENUM("BASIC", "ADMIN")
 );
 
 CREATE TABLE notes (
-    id int PRIMARY KEY UNIQUE NOT NULL AUTO_INCREMENT,
-    title varchar(255) NOT NULL,
-    content text(1023) NOT NULL,
-    user_id int NOT NULL,
+    id INT PRIMARY KEY UNIQUE NOT NULL AUTO_INCREMENT,
+    title VARCHAR(255) NOT NULL,
+    content TEXT(1023) NOT NULL,
+    user_id INT NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
 CREATE TABLE user_sessions (
-    id int PRIMARY KEY UNIQUE NOT NULL AUTO_INCREMENT,
-    token varchar(255) UNIQUE,
-    user_id int NOT NULL,
+    id INT PRIMARY KEY UNIQUE NOT NULL AUTO_INCREMENT,
+    token VARCHAR(255) UNIQUE,
+    user_id INT NOT NULL,
     expires_at DATETIME,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP(),
     FOREIGN KEY (user_id) REFERENCES users(id)

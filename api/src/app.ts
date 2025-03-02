@@ -12,6 +12,7 @@ import { logger } from './utils/logger';
 import { config } from './utils/config';
 import { DEFAULT_LOG_LEVEL, DEFAULT_PORT } from './utils/constants';
 import { requireAuth } from './middleware/requireAuth';
+import { requireAdmin } from './middleware/requireAdmin';
 const errorHandler = require('./middleware/errorHandler');
 
 // Validate config
@@ -51,7 +52,7 @@ app.use("/api/auth", AuthRouter);
 
 // Protected routers
 app.use("/api/notes", requireAuth, NoteRouter);
-app.use("/api/users", requireAuth, UserRouter);
+app.use("/api/users", requireAuth, requireAdmin, UserRouter);
 
 // Custom error handler
 app.use(errorHandler);

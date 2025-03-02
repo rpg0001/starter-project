@@ -33,11 +33,8 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
       throw new Error("Session user not found. User id: " + session.userId);
     }
 
-    req.user = {
-      id: user.id,
-      email: user.email,
-      username: user.username,
-    }
+    req.user = user.getBasic();
+    
     req.session = {
       id: session.id,
       token: session.token,

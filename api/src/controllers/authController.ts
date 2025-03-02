@@ -4,6 +4,7 @@ import * as UserSessionService from "../services/userSessionService";
 import { validateEmail, validateNewPassword, validateUsername } from "../utils/validation";
 import bcrypt from 'bcryptjs';
 import { logger } from "../utils/logger";
+import { UserType } from "../models/userModel";
 
 export async function signUp(req: any, res: any, next: any) {
     try {
@@ -23,7 +24,7 @@ export async function signUp(req: any, res: any, next: any) {
         }
 
         // Create new user
-        const user = await UserService.createUser(email, username, password);
+        const user = await UserService.createUser(email, username, password, UserType.BASIC);
 
         // Create new user session
         const newSession = await UserSessionService.createUserSession(user.id);
@@ -38,11 +39,7 @@ export async function signUp(req: any, res: any, next: any) {
 
         logger.info("signUp: success");
         // Return user details
-        res.status(201).json({
-            id: user.id,
-            email: user.email,
-            username: user.username
-        });
+        res.status(201).json(user.getBasic());
     } catch (error: any) {
         logger.error("signUp: error with status " + error.status);
         next(error);
@@ -91,11 +88,7 @@ export async function signIn(req: any, res: any, next: any) {
 
         logger.info("signIn: success");
         // Return user details
-        res.status(201).json({
-            id: user.id,
-            email: user.email,
-            username: user.username
-        });
+        res.status(201).json(user.getBasic());
     } catch (error: any) {
         logger.error("signIn: error with status " + error.status);
         next(error);
@@ -147,12 +140,8 @@ export async function getMe(req: any, res: any, next: any) {
 
         logger.info("getMe: success");
         res.status(200).json({
-            "user" : {
-                id: user.id,
-                email: user.email,
-                username: user.username
-            }
-        })
+            "user" : user.getBasic()
+        });
     } catch (error: any) {
         logger.error("getMe: error with status " + error.status);
         next(error);

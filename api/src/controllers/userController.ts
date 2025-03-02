@@ -1,10 +1,10 @@
 
-import { BadRequestError, NotFoundError } from '../utils/errors';
+import { BadRequestError, ForbiddenError, NotFoundError } from '../utils/errors';
 import * as UserService from '../services/userService';
 import { logger } from '../utils/logger';
 
 export async function getUser(req: any, res: any, next: any) {
-    const id = Number(req.params.id);
+    const id = Number(req.params?.id);
     try {
         if (isNaN(id)) throw new BadRequestError('/id', 'id must be a number');
 
@@ -12,7 +12,7 @@ export async function getUser(req: any, res: any, next: any) {
         if (!user) throw new NotFoundError(`Could not find user with id ${id}`);
         
         logger.info("getUser: success. userId: " + user.id);
-        res.status(200).json(user);
+        res.status(200).json(user.getBasic());
     } catch (error: any) {
         logger.info("getUser: error with status " + error.status + ". userId: " + id);
         next(error);
@@ -24,7 +24,7 @@ export async function listUsers(req: any, res: any, next: any) {
         const users = await UserService.listUsers();
 
         logger.info("listUsers: success. Users found: " + users.length);
-        return res.status(200).json(users);
+        return res.status(200).json(users.map(user => user.getBasic()));
     } catch (error: any) {
         logger.info("listUsers: error with status " + error.status);
         next(error);
@@ -46,7 +46,7 @@ export async function updateUser(req: any, res: any, next: any) {
         const user = await UserService.updateUser(id, email, username);
         
         logger.info("updateUser: success. userId: " + user.id);
-        return res.status(200).json(user);
+        return res.status(200).json(user.getBasic());
     } catch (error: any) {
         logger.info("updateUser: error with status " + error.status + ". userId: " + id);
         next(error);
