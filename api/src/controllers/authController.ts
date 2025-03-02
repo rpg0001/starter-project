@@ -115,7 +115,7 @@ export async function signOut(req: any, res: any, next: any) {
         }
 
         logger.info("signOut: success - signed out user");
-        res.json({ "message": "Successfully signout out"});
+        res.json({ "message": "Successfully signed out"});
     } catch (error: any) {
         logger.error("signOut: error with status " + error.status);
         next(error);
