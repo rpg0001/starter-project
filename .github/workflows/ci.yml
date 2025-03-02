@@ -1,0 +1,48 @@
+name: CI
+
+on: 
+    workflow_dispatch:
+    pull_request:
+
+jobs:
+    build-api:
+        name: Build API
+        runs-on: ubuntu-latest
+        defaults:
+            run:
+              working-directory: ./api
+        
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Setup node
+              uses: actions/setup-node@v4
+              with:
+                node-version: 22.x
+                cache: "npm"
+            
+            - name: Build
+              run: npm i && npm tsc
+
+    build-ui:
+        name: Build UI
+        runs-on: ubuntu-latest
+        defaults:
+            run:
+              working-directory: ./ui
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Setup node
+              uses: actions/setup-node@v4
+              with:
+                node-version: 22.x
+                cache: "npm"
+            
+            - name: Build
+              run: npm i && npm run react-scripts build
+            
+
