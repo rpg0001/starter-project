@@ -32,7 +32,7 @@ export default function NoteDetails() {
                     <div className='flex flex-row gap-2'>
                         <Link to={`edit`} >edit</Link>
                         |
-                        <a href="#" onClick={doDeleteNote}>delete</a>
+                        <a href="/" onClick={doDeleteNote}>delete</a>
                     </div>
                 </>
             :
