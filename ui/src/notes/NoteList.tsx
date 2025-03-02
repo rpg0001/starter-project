@@ -1,4 +1,4 @@
-import './notes.css';
+import './Notes.css';
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { listNotes, Note } from "../services/notes";

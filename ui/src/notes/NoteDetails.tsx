@@ -1,7 +1,7 @@
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { deleteNote, getNote, Note } from "../services/notes";
-import './notes.css';
+import './Notes.css';
 
 export default function NoteDetails() {
     const navigate = useNavigate();

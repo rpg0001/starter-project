@@ -1,5 +1,5 @@
 import { Outlet, Link } from "react-router-dom";
-import './layout.css';
+import './Layout.css';
 import { useAuth } from "../hooks/useAuth";
 
 export default function Layout() {
