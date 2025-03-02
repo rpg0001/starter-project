@@ -24,7 +24,7 @@ jobs:
                 cache-dependency-path: './api/package-lock.json'
             
             - name: Build
-              run: npm i && npm tsc
+              run: npm i && tsc
               working-directory: './api'
 
     build-ui:
@@ -46,7 +46,7 @@ jobs:
                 cache-dependency-path: './ui/package-lock.json'
             
             - name: Build
-              run: npm i && npm run react-scripts build
+              run: npm i && npm build
               working-directory: './ui'
             
 
