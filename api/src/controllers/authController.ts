@@ -3,6 +3,7 @@ import * as UserService from "../services/userService";
 import * as UserSessionService from "../services/userSessionService";
 import { validateEmail, validateNewPassword, validateUsername } from "../utils/validation";
 import bcrypt from 'bcryptjs';
+import { logger } from "../utils/logger";
 
 export async function signUp(req: any, res: any, next: any) {
     try {
@@ -35,6 +36,7 @@ export async function signUp(req: any, res: any, next: any) {
             expires: newSession.expiresAt,
         });
 
+        logger.info("signUp: success");
         // Return user details
         res.status(201).json({
             id: user.id,
@@ -42,6 +44,7 @@ export async function signUp(req: any, res: any, next: any) {
             username: user.username
         });
     } catch (error: any) {
+        logger.error("signUp: error with status " + error.status);
         next(error);
     }
 }
@@ -86,6 +89,7 @@ export async function signIn(req: any, res: any, next: any) {
             expires: newSession.expiresAt,
         });
 
+        logger.info("signIn: success");
         // Return user details
         res.status(201).json({
             id: user.id,
@@ -93,35 +97,39 @@ export async function signIn(req: any, res: any, next: any) {
             username: user.username
         });
     } catch (error: any) {
+        logger.error("signIn: error with status " + error.status);
         next(error);
     }
 }
 
 export async function signOut(req: any, res: any, next: any) {
     try {
-        const token = req.cookies.session
+        const token = req.cookies?.session;
 
-        if (!token) {
-            throw new BadRequestError("User is not logged in");
+        if (token) {
+            // Delete session
+            await UserSessionService.deleteUserSession(token);
+            res.clearCookie("session");
+        } else {
+            logger.info("signOut - user is not signed in");
         }
 
-        // Delete session
-        UserSessionService.deleteUserSession(token)
-        res.clearCookie("session");
-
-        // Return user details
-        res.status(204);
+        logger.info("signOut: success - signed out user");
+        res.json({ "message": "Successfully signout out"});
     } catch (error: any) {
+        logger.error("signOut: error with status " + error.status);
         next(error);
     }
 }
 
 export async function getMe(req: any, res: any, next: any) {
     try {
-        const token = req.cookies.session
+        const token = req.cookies?.session;
 
         if (!token) {
-            throw new BadRequestError("User is not logged in");
+            logger.info("getMe: User is not signed in");
+            res.status(200).json({ "user": null });
+            return;
         }
 
         const session = await UserSessionService.getUserSession(token);
@@ -137,12 +145,16 @@ export async function getMe(req: any, res: any, next: any) {
             throw new NotFoundError("User associated with session not found");
         }
 
-        res.json({
-            id: user.id,
-            email: user.email,
-            username: user.username
+        logger.info("getMe: success");
+        res.status(200).json({
+            "user" : {
+                id: user.id,
+                email: user.email,
+                username: user.username
+            }
         })
     } catch (error: any) {
+        logger.error("getMe: error with status " + error.status);
         next(error);
     }
 }

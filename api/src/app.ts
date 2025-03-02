@@ -21,7 +21,12 @@ const app = express();
 const port = config.PORT ?? DEFAULT_PORT;
 
 // Middleware
-if (config.NODE_ENV === 'development') app.use(cors());
+if (config.NODE_ENV === 'development') {
+  app.use(cors({
+    origin: "http://localhost:3000",
+    credentials: true
+  }));
+}
 app.use(cookieParser());
 app.use(express.json());
 app.use(morgan('tiny', { 

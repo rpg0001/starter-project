@@ -1,39 +1,45 @@
 
 import { BadRequestError, NotFoundError } from '../utils/errors';
 import * as NoteService from '../services/noteService';
+import { logger } from '../utils/logger';
 
 export async function getNote(req: any, res: any, next: any) {
+    const id = Number(req.params.id);
     try {
-        const id = Number(req.params.id);
-
         if (isNaN(id)) throw new BadRequestError('/id', 'id must be a number');
 
         const note = await NoteService.getNote(req.params.id);
         if (!note) throw new NotFoundError(`Could not find note with id ${id}`);
+        
+        logger.info("getNote: success. noteId: " + note.id);
         res.status(200).json(note);
     } catch (error: any) {
+        logger.info("getNote: error with status " + error.status + ". noteId: " + id);
         next(error);
     }
 }
 
 export async function listNotes(req: any, res: any, next: any) {
+    const userIdString = req.query?.userId;
     try {
-        const userIdString = req.query?.userId;
         const userId = userIdString;
         if (userIdString && isNaN(userId)) throw new BadRequestError('/userId', 'userId must be a number');
 
         const notes = await NoteService.listNotes(userIdString ? userId : null);
+
+        logger.info("listNotes: success. Notes found: " + notes.length);
         return res.status(200).json(notes);
     } catch (error: any) {
+        logger.info("listNotes: error with status " + error.status + ". userId: " + userIdString);
         next(error);
     }
 }
 
 export async function createNote(req: any, res: any, next: any) {
+    const userIdString = req.body?.userId;
     try {
         const title = req.body?.title;
         const content = req.body?.content;
-        const userIdString = req.body?.userId;
 
         if (!title) throw new BadRequestError('/body/title', 'missing required field');
         if (!content) throw new BadRequestError('/body/content', 'missing required field');
@@ -42,15 +48,18 @@ export async function createNote(req: any, res: any, next: any) {
         if (isNaN(userId)) throw new BadRequestError('/body/userId', 'user id must be a number');
 
         const note = await NoteService.createNote(title, content, userId);
+
+        logger.info("createNote: success. noteId " + note?.id + ". userId: " + userIdString);
         return res.status(201).json(note);
     } catch (error: any) {
+        logger.info("createNote: error with status " + error.status + ". userId: " + userIdString);
         next(error);
     }
 }
 
 export async function updateNote(req: any, res: any, next: any) {
+    const id = Number(req.params.id);
     try {
-        const id = Number(req.params.id);
         const title = req.body?.title;
         const content = req.body?.content;
 
@@ -60,21 +69,26 @@ export async function updateNote(req: any, res: any, next: any) {
         if (content && content.length > 1023) throw new BadRequestError('/body/content', 'content must be 1023 characters or less');
 
         const note = await NoteService.updateNote(id, title, content);
+
+        logger.info("updateNote: success. noteId " + note?.id);
         return res.status(200).json(note);
     } catch (error: any) {
+        logger.info("updateNote: error with status " + error.status + ". noteId: " + id);
         next(error);
     }
 }
 
 export async function deleteNote(req: any, res: any, next: any) {
+    const id = Number(req.params.id);
     try {
-        const id = Number(req.params.id);
-
         if (isNaN(id)) throw new BadRequestError('/id', 'id must be a number');
 
         await NoteService.deleteNote(req.params.id);
+
+        logger.info("deleteNote: success. noteId " + id);
         return res.status(204).json();
     } catch (error: any) {
+        logger.info("deleteNote: error with status " + error.status + ". noteId: " + id);
         next(error);
     }
 }

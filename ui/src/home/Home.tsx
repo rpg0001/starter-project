@@ -1,10 +1,20 @@
 import { Link } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
+import { URL } from "url";
 
 export default function Home() {
+    const auth = useAuth();
     return (
         <div>
             <h1>Home</h1>
-            <Link to="/notes">Notes</Link>
+            {auth.user ? 
+                <Link to="/notes">Notes</Link>
+            :
+                <ul>
+                    <li><Link to="/auth/signup">Sign up</Link></li>
+                    <li><Link to="/auth/signin">Sign in</Link></li>
+                </ul>    
+            }
         </div>
     )
 }

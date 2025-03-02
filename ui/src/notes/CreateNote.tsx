@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { createNote } from "./notes";
+import { createNote } from "../services/notes";
 import './notes.css';
 
 export function CreateNote() {

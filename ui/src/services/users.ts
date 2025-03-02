@@ -1,5 +1,5 @@
-import axios from "axios";
 import { baseUrl } from "../shared/constants";
+import { axiosGet, axiosPatch, axiosDelete } from "../shared/axios";
 
 export interface User {
     id: number;
@@ -10,25 +10,13 @@ export interface User {
 export async function getUser(
     id: number
 ): Promise<User> {
-    const response = await axios.get(`${baseUrl}/users/${id}`);
+    const response = await axiosGet(`${baseUrl}/users/${id}`);
     return response.data as User;
 }
 
 export async function listUsers(): Promise<User[]> {
-    const response = await axios.get(`${baseUrl}/users`);
+    const response = await axiosGet(`${baseUrl}/users`);
     return response.data as User[];
-}
-
-export async function createUser(
-    email: string, 
-    username: string
-): Promise<User> {
-    const requestBody = {
-        email: email,
-        username: username
-    }
-    const response = await axios.post(`${baseUrl}/users`, requestBody);
-    return response.data as User;
 }
 
 export async function updateUser(
@@ -40,11 +28,11 @@ export async function updateUser(
         email: email,
         username: username
     }
-    const response = await axios.patch(`${baseUrl}/users/${id}`, requestBody);
+    const response = await axiosPatch(`${baseUrl}/users/${id}`, requestBody);
     return response.data as User;
 }
 
 export async function deleteUser(id: number) {
-    const response = await axios.delete(`${baseUrl}/users/${id}`);
+    const response = await axiosDelete(`${baseUrl}/users/${id}`);
     return response.data;
 }

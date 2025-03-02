@@ -2,6 +2,7 @@ import { randomBytes } from "crypto";
 import { connection } from "../app";
 import { UserSession } from "../models/userSessionModel";
 import { NotFoundError } from "../utils/errors";
+import { logger } from "../utils/logger";
 
 export async function getUserSession(
     token: string
@@ -62,7 +63,8 @@ export async function deleteUserSession(
     const userSession = await getUserSession(token);
 
     if (!userSession) {
-        throw new NotFoundError("Could not find user session");
+        logger.info("deleteUserSession - session has already been deleted");
+        return;
     }
 
     await connection.query(`
