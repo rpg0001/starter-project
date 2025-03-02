@@ -3,21 +3,20 @@ import { getMe, signIn, signOut, signUp } from '../services/auth';
 import { User } from '../services/users';
 
 interface AuthContextType {
-  user: User | null
-  postSignIn: (email: string, password: string) => Promise<void>
-  postSignUp: (email: string, password: string, username: string) => Promise<void>
-  postSignOut: () => Promise<void>
-  isLoading: boolean
+  user: User | null;
+  postSignIn: (email: string, password: string) => Promise<void>;
+  postSignUp: (email: string, password: string, username: string) => Promise<void>;
+  postSignOut: () => Promise<void>;
+  isLoading: boolean;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined)
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    console.log("AuthProvider - useEffect");
     checkAuth();
   }, []);
 
@@ -48,7 +47,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Used to sign out a user and clear the user data from the context
   const postSignOut = async () => {
-    console.log("postSignOut");
     await signOut();
     setUser(null);
   }

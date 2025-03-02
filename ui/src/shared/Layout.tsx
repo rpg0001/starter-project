@@ -12,10 +12,10 @@ export default function Layout() {
                     {auth.user ? 
                         <ul>
                             <li>
-                                <Link to="/auth/me">Account</Link>
+                                <button onClick={() => auth.postSignOut()}>Sign Out</button>
                             </li>
                             <li>
-                                <button onClick={() => auth.postSignOut()}>Sign Out</button>
+                                <Link to="/auth/me">Account</Link>
                             </li>
                         </ul>
                         :
@@ -23,6 +23,7 @@ export default function Layout() {
                             <li>
                                 <Link to="/auth/signin">Sign in</Link>
                             </li>
+                            |
                             <li>
                                 <Link to="/auth/signup">Sign up</Link>
                             </li>

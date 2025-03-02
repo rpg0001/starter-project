@@ -1,6 +1,6 @@
-import { baseUrl } from "../shared/constants";
+import { baseUrl } from "../utils/constants";
 import { User } from "./users";
-import { axiosGet, axiosPost } from "../shared/axios";
+import { axiosGet, axiosPost } from "../utils/axios";
 import axios, { AxiosResponse } from "axios";
 
 export async function signUp(
@@ -30,11 +30,9 @@ export async function signIn(
 }
 
 export async function signOut(): Promise<AxiosResponse> {
-    console.log("signOut");
     const response = await axios.post(`${baseUrl}/auth/signout`, {}, {
         withCredentials: true
     });
-    console.log("signOut response code: " + response.status)
     return response;
 }
 

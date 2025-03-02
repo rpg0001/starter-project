@@ -7,8 +7,14 @@ export default function Me() {
             {auth.user ? 
                 <div>
                     <h1>My account</h1>
-                    <p>Email: {auth.user.email}</p>
-                    <p>Username: {auth.user.username}</p>
+                    <p>
+                        <h2>Email</h2>
+                        <input type="text" disabled={true} value={auth.user.email}></input>
+                    </p>
+                    <p>
+                        <h2>Username</h2>
+                        <input type="text" disabled={true} value={auth.user.username}></input>
+                    </p>
                 </div>
                 :
                 <div>

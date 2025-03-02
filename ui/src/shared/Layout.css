@@ -19,3 +19,13 @@
 main {
     @apply mx-28 my-10;
 }
+
+.auth-navbar ul {
+    @apply 
+        flex 
+        w-full 
+        p-1 
+        gap-2
+        justify-end
+    ;
+}

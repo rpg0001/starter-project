@@ -1,5 +1,5 @@
-import { baseUrl } from "../shared/constants";
-import { axiosDelete, axiosGet, axiosPatch, axiosPost } from "../shared/axios";
+import { baseUrl } from "../utils/constants";
+import { axiosDelete, axiosGet, axiosPatch, axiosPost } from "../utils/axios";
 
 export interface Note {
     id: number;
