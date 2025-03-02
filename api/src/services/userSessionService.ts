@@ -72,3 +72,23 @@ export async function deleteUserSession(
         WHERE id = ?
     `, [userSession.id]);
 }
+
+export async function deleteUserSessions(
+    userId: number
+) {
+    const [rawUserSessions] = await connection.query(`
+        SELECT * FROM user_sessions WHERE user_id = ?
+    `, [userId]);
+
+    const userSessions = (rawUserSessions as any[]).map(userSession => new UserSession(
+        userSession.id, 
+        userSession.token, 
+        userSession.user_id,
+        userSession.expires_at, 
+        userSession.created_at
+    ));
+
+    for (const session of userSessions) {
+        await deleteUserSession(session.token);
+    }
+}

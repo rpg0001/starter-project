@@ -18,7 +18,7 @@ function errorHandler(
         if (baseError.status >= 500) {
             logger.error(config.NODE_ENV === 'development' ? err.stack : `Error: ${err.message}`);
         } else {
-            logger.warn(`Bad request error: ${err.message}`);
+            logger.error(`Client error: ${err.message}`);
         }
     
         return res

@@ -14,7 +14,7 @@ export async function getUser(req: any, res: any, next: any) {
         logger.info("getUser: success. userId: " + user.id);
         res.status(200).json(user.getBasic());
     } catch (error: any) {
-        logger.info("getUser: error with status " + error.status + ". userId: " + id);
+        logger.error("getUser: error with status " + error.status + ". userId: " + id);
         next(error);
     }
 }
@@ -26,7 +26,7 @@ export async function listUsers(req: any, res: any, next: any) {
         logger.info("listUsers: success. Users found: " + users.length);
         return res.status(200).json(users.map(user => user.getBasic()));
     } catch (error: any) {
-        logger.info("listUsers: error with status " + error.status);
+        logger.error("listUsers: error with status " + error.status);
         next(error);
     }
 }
@@ -48,7 +48,7 @@ export async function updateUser(req: any, res: any, next: any) {
         logger.info("updateUser: success. userId: " + user.id);
         return res.status(200).json(user.getBasic());
     } catch (error: any) {
-        logger.info("updateUser: error with status " + error.status + ". userId: " + id);
+        logger.error("updateUser: error with status " + error.status + ". userId: " + id);
         next(error);
     }
 }
@@ -57,13 +57,14 @@ export async function deleteUser(req: any, res: any, next: any) {
     const id = Number(req.params.id);
     try {
         if (isNaN(id)) throw new BadRequestError('/id', 'id must be a number');
+        if (id == req.user.id) throw new ForbiddenError('Cannot delete currently authenticated user');
 
         await UserService.deleteUser(req.params.id);
         
         logger.info("deleteUser: success. userId: " + id);
         return res.status(204).json();
     } catch (error: any) {
-        logger.info("deleteUser: error with status " + error.status + ". userId: " + id);
+        logger.error("deleteUser: error with status " + error.status + ". userId: " + id);
         next(error);
     }
 }

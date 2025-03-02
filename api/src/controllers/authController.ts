@@ -1,7 +1,7 @@
 import { BadRequestError, NotFoundError, UnauthorizedError } from "../utils/errors";
 import * as UserService from "../services/userService";
 import * as UserSessionService from "../services/userSessionService";
-import { validateEmail, validateNewPassword, validateUsername } from "../utils/validation";
+import { validateAdminKey, validateEmail, validateNewPassword, validateUsername } from "../utils/validation";
 import bcrypt from 'bcryptjs';
 import { logger } from "../utils/logger";
 import { UserType } from "../models/userModel";
@@ -144,6 +144,48 @@ export async function getMe(req: any, res: any, next: any) {
         });
     } catch (error: any) {
         logger.error("getMe: error with status " + error.status);
+        next(error);
+    }
+}
+
+export async function signUpAdmin(req: any, res: any, next: any) {
+    try {
+        const email = req.body?.email;
+        const username = req.body?.username;
+        const password = req.body?.password;
+        const adminKey = req.body?.adminKey;
+
+        // Validate request properties
+        validateEmail(email);
+        validateUsername(username);
+        validateNewPassword(password);
+        validateAdminKey(adminKey);
+
+        // Check user doesn't exist
+        const existingUsers = await UserService.searchUsers(username, email);
+        if (existingUsers.length > 0) {
+            throw new BadRequestError('/body', 'User already exists');
+        }
+
+        // Create new user
+        const user = await UserService.createUser(email, username, password, UserType.ADMIN);
+
+        // Create new user session
+        const newSession = await UserSessionService.createUserSession(user.id);
+
+        // Set session cookie
+        res.cookie("session", newSession.token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            expires: newSession.expiresAt,
+        });
+
+        logger.info("signUpAdmin: success");
+        // Return user details
+        res.status(201).json(user.getBasic());
+    } catch (error: any) {
+        logger.error("signUpAdmin: error with status " + error.status);
         next(error);
     }
 }

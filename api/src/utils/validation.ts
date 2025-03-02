@@ -1,4 +1,5 @@
-import { BadRequestError } from "./errors";
+import { config } from "./config";
+import { BadRequestError, UnauthorizedError } from "./errors";
 // TODO proper validation
 
 export function validateEmail(email?: string) {
@@ -17,4 +18,12 @@ export function validateNewPassword(password?: string) {
     if (!password) throw new BadRequestError('/body/password', 'missing required field');
     if (password.length > 255)  throw new BadRequestError('/body/password', 'password must be 255 characters or less');
     if (password.length < 8)  throw new BadRequestError('/body/password', 'password must be 8 characters or more');
+}
+
+export function validateAdminKey(adminKey?: string) {
+    if (!adminKey) throw new BadRequestError('/body/adminKey', 'missing required field');
+
+    if (adminKey !== config.ADMIN_KEY) {
+        throw new UnauthorizedError("Incorrect admin key provided");
+    }
 }

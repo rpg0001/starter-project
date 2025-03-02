@@ -2,6 +2,7 @@ import { connection } from "../app";
 import { User, UserType } from "../models/userModel";
 import { NotFoundError } from "../utils/errors";
 import bcrypt from 'bcryptjs';
+import * as UserSessionService from "./userSessionService";
 
 export async function getUser(
     id: number
@@ -120,6 +121,10 @@ export async function deleteUser(
     const user = await getUser(id);
     if (!user) throw new NotFoundError(`No user found with id ${id}`);
 
+    // Delete any user sessions first
+    await UserSessionService.deleteUserSessions(id);
+
+    // Then delete user
     await connection.query(`
         DELETE FROM users
         WHERE id = ?
