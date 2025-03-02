@@ -8,41 +8,43 @@ jobs:
     build-api:
         name: Build API
         runs-on: ubuntu-latest
-        defaults:
-            run:
-              working-directory: ./api
         
         steps:
             - name: Checkout
               uses: actions/checkout@v4
+              with:
+                working-directory: ./api
 
             - name: Setup node
               uses: actions/setup-node@v4
               with:
                 node-version: 22.x
                 cache: "npm"
+                working-directory: ./api
             
             - name: Build
               run: npm i && npm tsc
+              working-directory: ./api
 
     build-ui:
         name: Build UI
         runs-on: ubuntu-latest
-        defaults:
-            run:
-              working-directory: ./ui
 
         steps:
             - name: Checkout
               uses: actions/checkout@v4
+              with:
+                working-directory: ./ui
 
             - name: Setup node
               uses: actions/setup-node@v4
               with:
                 node-version: 22.x
                 cache: "npm"
+                working-directory: ./ui
             
             - name: Build
               run: npm i && npm run react-scripts build
+              working-directory: ./ui
             
 
