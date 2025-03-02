@@ -4,6 +4,7 @@ import express from 'express';
 import mysql from 'mysql2';
 import morgan from 'morgan';
 import cors from 'cors';
+import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import NoteRouter from './routers/noteRouter';
 import UserRouter from './routers/userRouter';
@@ -28,6 +29,7 @@ if (config.NODE_ENV === 'development') {
     credentials: true
   }));
 }
+app.use(helmet());
 app.use(cookieParser());
 app.use(express.json());
 app.use(morgan('tiny', { 
