@@ -1,6 +1,6 @@
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { deleteNote, getNote, Note } from "./notes";
+import { deleteNote, getNote, Note } from "../services/notes";
 import './notes.css';
 
 export default function NoteDetails() {
@@ -32,7 +32,7 @@ export default function NoteDetails() {
                     <div className='flex flex-row gap-2'>
                         <Link to={`edit`} >edit</Link>
                         |
-                        <a href="#" onClick={doDeleteNote}>delete</a>
+                        <a href="/" onClick={doDeleteNote}>delete</a>
                     </div>
                 </>
             :

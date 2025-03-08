@@ -1,6 +1,8 @@
 import { connection } from "../app";
-import { User } from "../models/userModel";
+import { User, UserType } from "../models/userModel";
 import { NotFoundError } from "../utils/errors";
+import bcrypt from 'bcryptjs';
+import * as UserSessionService from "./userSessionService";
 
 export async function getUser(
     id: number
@@ -10,24 +12,80 @@ export async function getUser(
     , [id]);
     const rows = result[0] as any[];
     const user = rows[0];
-    return user ? new User(user.id, user.email, user.username) : null;
+    return user ? new User(
+        user.id, 
+        user.email, 
+        user.username, 
+        user.password_hash, 
+        user.user_type
+    ) : null;
 }
 
 export async function listUsers(): Promise<User[]>  {
     const [users] = await connection.query(`
         SELECT * FROM users
     `);
-    return (users as any[]).map(user => new User(user.id, user.email, user.username))
+    return (users as any[]).map(user => new User(
+        user.id, 
+        user.email, 
+        user.username, 
+        user.password_hash, 
+        user.user_type
+    ));
+}
+
+export async function searchUsers(username?: string, email?: string): Promise<User[]>  {
+    if (username && email) {
+        const [users] = await connection.query(`
+            SELECT * FROM users WHERE email = ? OR username = ?
+        `, [username, email]);
+        return (users as any[]).map(user => new User(
+            user.id, 
+            user.email, 
+            user.username, 
+            user.password_hash, 
+            user.user_type
+        ));
+    } else if (username) {
+        const [users] = await connection.query(`
+            SELECT * FROM users WHERE username = ?
+        `, [username]);
+        return (users as any[]).map(user => new User(
+            user.id, 
+            user.email, 
+            user.username, 
+            user.password_hash, 
+            user.user_type
+        ));
+    } else if (email) {
+        const [users] = await connection.query(`
+            SELECT * FROM users WHERE email = ?
+        `, [email]);
+        return (users as any[]).map(user => new User(
+            user.id, 
+            user.email, 
+            user.username, 
+            user.password_hash, 
+            user.user_type
+        ));
+    } else {
+        return [];
+    }
 }
 
 export async function createUser(
     email: string, 
-    username: string
+    username: string,
+    password: string,
+    userType: UserType
 ): Promise<User>  {
+    const salt = await bcrypt.genSalt(10);
+    const passwordHash = await bcrypt.hash(password, salt);
+
     const [newUser] = await connection.query(`
-        INSERT INTO users (email, username)
-        VALUES (?, ?)
-    `, [ email, username ]) as any;
+        INSERT INTO users (email, username, password_hash, user_type)
+        VALUES (?, ?, ?, ?)
+    `, [ email, username, passwordHash, userType ]) as any;
 
     const fullNewUser = await getUser(newUser.insertId);
     if (!fullNewUser) throw new Error("Failed to retrieve newly created user with id " + newUser.insertId);
@@ -63,6 +121,10 @@ export async function deleteUser(
     const user = await getUser(id);
     if (!user) throw new NotFoundError(`No user found with id ${id}`);
 
+    // Delete any user sessions first
+    await UserSessionService.deleteUserSessions(id);
+
+    // Then delete user
     await connection.query(`
         DELETE FROM users
         WHERE id = ?

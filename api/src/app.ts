@@ -4,11 +4,16 @@ import express from 'express';
 import mysql from 'mysql2';
 import morgan from 'morgan';
 import cors from 'cors';
+import helmet from 'helmet';
+import cookieParser from 'cookie-parser';
 import NoteRouter from './routers/noteRouter';
 import UserRouter from './routers/userRouter';
+import AuthRouter from './routers/authRouter';
 import { logger } from './utils/logger';
 import { config } from './utils/config';
 import { DEFAULT_LOG_LEVEL, DEFAULT_PORT } from './utils/constants';
+import { requireAuth } from './middleware/requireAuth';
+import { requireAdmin } from './middleware/requireAdmin';
 const errorHandler = require('./middleware/errorHandler');
 
 // Validate config
@@ -18,7 +23,14 @@ const app = express();
 const port = config.PORT ?? DEFAULT_PORT;
 
 // Middleware
-if (config.NODE_ENV === 'development') app.use(cors());
+if (config.NODE_ENV === 'development') {
+  app.use(cors({
+    origin: "http://localhost:3000",
+    credentials: true
+  }));
+}
+app.use(helmet());
+app.use(cookieParser());
 app.use(express.json());
 app.use(morgan('tiny', { 
   stream: { 
@@ -35,11 +47,14 @@ export const connection = mysql.createPool({
 }).promise();
 
 // Health check route
-app.get('/', (req, res) => res.status(200).json('OK'));
+app.get('/api', (req, res) => res.status(200).json('OK'));
 
-// Routers
-app.use(NoteRouter);
-app.use(UserRouter);
+// Public routers
+app.use("/api/auth", AuthRouter);
+
+// Protected routers
+app.use("/api/notes", requireAuth, NoteRouter);
+app.use("/api/users", requireAuth, requireAdmin, UserRouter);
 
 // Custom error handler
 app.use(errorHandler);

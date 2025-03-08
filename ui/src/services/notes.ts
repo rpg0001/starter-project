@@ -1,5 +1,5 @@
-import axios from "axios";
-import { baseUrl } from "../shared/constants";
+import { baseUrl } from "../utils/constants";
+import { axiosDelete, axiosGet, axiosPatch, axiosPost } from "../utils/axios";
 
 export interface Note {
     id: number;
@@ -11,12 +11,12 @@ export interface Note {
 export async function getNote(
     id: number
 ): Promise<Note> {
-    const response = await axios.get(`${baseUrl}/notes/${id}`);
+    const response = await axiosGet(`${baseUrl}/notes/${id}`);
     return response.data as Note;
 }
 
 export async function listNotes(): Promise<Note[]> {
-    const response = await axios.get(`${baseUrl}/notes`);
+    const response = await axiosGet(`${baseUrl}/notes`);
     return response.data as Note[];
 }
 
@@ -30,7 +30,7 @@ export async function createNote(
         content: content,
         userId: userId
     }
-    const response = await axios.post(`${baseUrl}/notes`, requestBody);
+    const response = await axiosPost(`${baseUrl}/notes`, requestBody);
     return response.data as Note;
 }
 
@@ -43,11 +43,11 @@ export async function updateNote(
         title: title,
         content: content
     }
-    const response = await axios.patch(`${baseUrl}/notes/${id}`, requestBody);
+    const response = await axiosPatch(`${baseUrl}/notes/${id}`, requestBody);
     return response.data as Note;
 }
 
 export async function deleteNote(id: number) {
-    const response = await axios.delete(`${baseUrl}/notes/${id}`);
+    const response = await axiosDelete(`${baseUrl}/notes/${id}`);
     return response.data;
 }
