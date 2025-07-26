@@ -1,94 +1,105 @@
 import { randomBytes } from "crypto";
-import { connection } from "../app";
-import { UserSession } from "../models/userSessionModel";
-import { NotFoundError } from "../utils/errors";
 import { logger } from "../utils/logger";
+import { UserSession } from "../models";
+import { InternalServerError } from "../utils/errors";
 
 export async function getUserSession(
     token: string
 ): Promise<UserSession | null> {
-    const result = await connection.query(`
-        SELECT * FROM user_sessions WHERE token = ?`
-    , [token]);
-    const rows = result[0] as any[];
-    const userSession = rows[0];
-    return userSession ? new UserSession(
-        userSession.id, 
-        userSession.token, 
-        userSession.user_id,
-        userSession.expires_at, 
-        userSession.created_at
-    ) : null;
+    try {
+        return await UserSession.findOne({
+            where: {
+                token: token
+            },
+            attributes: [
+                "id",
+                "token",
+                "userId",
+                "expiresAt",
+                "createdAt",
+            ]
+        })
+    } catch (error: any) {
+        const message = `getUserSession error: ${error.message}`;
+        throw new InternalServerError(message);
+    }
 }
 
 export async function getUserSessionById(
     id: number
 ): Promise<UserSession | null> {
-    const result = await connection.query(`
-        SELECT * FROM user_sessions WHERE id = ?`
-    , [id]);
-    const rows = result[0] as any[];
-    const userSession = rows[0];
-    return userSession ? new UserSession(
-        userSession.id, 
-        userSession.token, 
-        userSession.user_id,
-        userSession.expires_at, 
-        userSession.created_at
-    ) : null;
+    try {
+        return await UserSession.findOne({
+            where: {
+                id: id
+            }
+        })
+    } catch (error: any) {
+        const message = `getUserSessionById error: ${error.message}`;
+        throw new InternalServerError(message);
+    }
 }
 
 export async function createUserSession(
     userId: number
 ): Promise<UserSession>  {
-    const token = randomBytes(32).toString('hex');
-    const expiresAtDate = new Date();
-    expiresAtDate.setDate(expiresAtDate.getDate() + 30);
-    const expiresAt = expiresAtDate.toISOString().split(".")[0];
-    
-    const [newUserSession] = await connection.query(`
-        INSERT INTO user_sessions (token, expires_at, user_id)
-        VALUES (?, ?, ?)
-    `, [ token, expiresAt, userId ]) as any;
+    try {
+        const token = randomBytes(32).toString('hex');
+        const expiresAtDate = new Date();
+        expiresAtDate.setDate(expiresAtDate.getDate() + 30);
+        const expiresAt = expiresAtDate.toISOString().split(".")[0];
 
-    const fullNewUserSession = await getUserSessionById(newUserSession.insertId);
-    if (!fullNewUserSession) throw new Error("Failed to retrieve newly created user session with id " + newUserSession.insertId);
-    return fullNewUserSession;
+        const newUserSession = await UserSession.create({
+            token: token,
+            expiresAt: expiresAt,
+            userId: userId
+        })
+        
+        return newUserSession;
+    } catch (error: any) {
+        const message = `createUserSession error: ${error.message}`;
+        throw new InternalServerError(message);
+    }
 }
 
 
 export async function deleteUserSession(
     token: string
 ) {
-    const userSession = await getUserSession(token);
+    try {
+        const userSession = await getUserSession(token);
 
-    if (!userSession) {
-        logger.info("deleteUserSession - session has already been deleted");
-        return;
+        if (!userSession) {
+            logger.info("deleteUserSession - session has already been deleted");
+            return;
+        }
+
+        await UserSession.destroy({
+            where: {
+                token: token
+            }
+        })
+    } catch (error: any) {
+        const message = `deleteUserSession error: ${error.message}`;
+        throw new InternalServerError(message);
     }
-
-    await connection.query(`
-        DELETE FROM user_sessions
-        WHERE id = ?
-    `, [userSession.id]);
 }
 
 export async function deleteUserSessions(
     userId: number
 ) {
-    const [rawUserSessions] = await connection.query(`
-        SELECT * FROM user_sessions WHERE user_id = ?
-    `, [userId]);
+    try {
+        const userSessions = await UserSession.findAll({
+            where: {
+                userId: userId
+            }
+        })
 
-    const userSessions = (rawUserSessions as any[]).map(userSession => new UserSession(
-        userSession.id, 
-        userSession.token, 
-        userSession.user_id,
-        userSession.expires_at, 
-        userSession.created_at
-    ));
-
-    for (const session of userSessions) {
-        await deleteUserSession(session.token);
+        for (const session of userSessions) {
+            await deleteUserSession(session.token);
+        }
+    } catch (error: any) {
+        const message = `deleteUserSessions error: ${error.message}`;
+        throw new InternalServerError(message);
     }
 }

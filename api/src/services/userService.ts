@@ -1,75 +1,61 @@
-import { connection } from "../app";
-import { User, UserType } from "../models/userModel";
-import { NotFoundError } from "../utils/errors";
 import bcrypt from 'bcryptjs';
 import * as UserSessionService from "./userSessionService";
+import { InternalServerError, NotFoundError } from '../utils/errors';
+import { User, UserType } from '../models';
+import { logger } from '../utils/logger';
 
 export async function getUser(
     id: number
 ): Promise<User | null> {
-    const result = await connection.query(`
-        SELECT * FROM users WHERE id = ?`
-    , [id]);
-    const rows = result[0] as any[];
-    const user = rows[0];
-    return user ? new User(
-        user.id, 
-        user.email, 
-        user.username, 
-        user.password_hash, 
-        user.user_type
-    ) : null;
+    try {
+        return await User.findOne({
+            where: {
+                id: id
+            }
+        })
+    } catch(error: any) {
+        const message = `getUser error: ${error.message}`;
+        throw new InternalServerError(message);
+    }
 }
 
 export async function listUsers(): Promise<User[]>  {
-    const [users] = await connection.query(`
-        SELECT * FROM users
-    `);
-    return (users as any[]).map(user => new User(
-        user.id, 
-        user.email, 
-        user.username, 
-        user.password_hash, 
-        user.user_type
-    ));
+    try {
+        return await User.findAll();
+    } catch(error: any) {
+        const message = `listUsers error: ${error.message}`;
+        throw new InternalServerError(message);
+    }
 }
 
-export async function searchUsers(username?: string, email?: string): Promise<User[]>  {
-    if (username && email) {
-        const [users] = await connection.query(`
-            SELECT * FROM users WHERE email = ? OR username = ?
-        `, [username, email]);
-        return (users as any[]).map(user => new User(
-            user.id, 
-            user.email, 
-            user.username, 
-            user.password_hash, 
-            user.user_type
-        ));
-    } else if (username) {
-        const [users] = await connection.query(`
-            SELECT * FROM users WHERE username = ?
-        `, [username]);
-        return (users as any[]).map(user => new User(
-            user.id, 
-            user.email, 
-            user.username, 
-            user.password_hash, 
-            user.user_type
-        ));
-    } else if (email) {
-        const [users] = await connection.query(`
-            SELECT * FROM users WHERE email = ?
-        `, [email]);
-        return (users as any[]).map(user => new User(
-            user.id, 
-            user.email, 
-            user.username, 
-            user.password_hash, 
-            user.user_type
-        ));
-    } else {
-        return [];
+export async function searchUsers(username: string, email: string): Promise<User[]>  {
+    try {
+        logger.debug(`Searching for user with email: ${email} and username ${username}`);
+        return await User.findAll({
+            where: {
+                email: email,
+                username: username
+            }
+        })
+    } catch(error: any) {
+        const message = `searchUsers error: ${error.message}`;
+        throw new InternalServerError(message);
+    }
+}
+
+export async function searchUsersByEmail(email: string): Promise<User[]>  {
+    try {
+        logger.debug(`Searching for user with email: ${email}`);
+        const result = await User.findAll({
+            where: {
+                email: email
+            }
+        })
+        logger.debug(`User search result: ${JSON.stringify(result)}`);
+        return result;
+    } catch(error: any) {
+        const message = `searchUsersByEmail error: ${error.message}`;
+        throw new InternalServerError(message);
     }
 }
 
@@ -79,17 +65,22 @@ export async function createUser(
     password: string,
     userType: UserType
 ): Promise<User>  {
-    const salt = await bcrypt.genSalt(10);
-    const passwordHash = await bcrypt.hash(password, salt);
+    try {
+        const salt = await bcrypt.genSalt(10);
+        const passwordHash = await bcrypt.hash(password, salt);
 
-    const [newUser] = await connection.query(`
-        INSERT INTO users (email, username, password_hash, user_type)
-        VALUES (?, ?, ?, ?)
-    `, [ email, username, passwordHash, userType ]) as any;
-
-    const fullNewUser = await getUser(newUser.insertId);
-    if (!fullNewUser) throw new Error("Failed to retrieve newly created user with id " + newUser.insertId);
-    return fullNewUser;
+        const newUser = await User.create({
+            email: email,
+            username: username,
+            passwordHash: passwordHash,
+            userType: userType
+        })
+        
+        return newUser;
+    } catch(error: any) {
+        const message = `createUser error: ${error.message}`;
+        throw new InternalServerError(message);
+    }
 }
 
 export async function updateUser(
@@ -97,36 +88,51 @@ export async function updateUser(
     email: string, 
     username: string
 ): Promise<User>  {
-    const user = await getUser(id);
+    try {
+        const user = await getUser(id);
+        if (!user) throw new NotFoundError(`Could not find user with id ${id}`);
 
-    if (!user) throw new NotFoundError(`Could not find user with id ${id}`);
+        const newEmail = email ?? user.email;
+        const newUsername = username ?? user.username;
 
-    const newEmail = email ?? user.email;
-    const newUsername = username ?? user.username;
-    
-    const result = await connection.query(`
-        UPDATE users
-        SET email = ?, username = ?
-        WHERE id = ?
-    `, [newEmail, newUsername, id]) as any;
+        await User.update({
+            email: newEmail,
+            username: newUsername
+        },
+        {
+            where: {
+                id: id
+            }
+        })
 
-    const updatedUser = await getUser(id);
-    if (!updatedUser) throw new Error("Failed to retrieve newly updated user with id " + id);
-    return updatedUser;
+        const updatedUser = await getUser(id);
+        if (!updatedUser) throw new Error("Failed to retrieve newly updated user with id " + id);
+
+        return updatedUser;
+    } catch(error: any) {
+        const message = `updateUser error: ${error.message}`;
+        throw new InternalServerError(message);
+    }
 }
 
 export async function deleteUser(
     id: number
 ) {
-    const user = await getUser(id);
-    if (!user) throw new NotFoundError(`No user found with id ${id}`);
+    try {
+        const user = await getUser(id);
+        if (!user) throw new NotFoundError(`No user found with id ${id}`);
 
-    // Delete any user sessions first
-    await UserSessionService.deleteUserSessions(id);
+        // Delete any user sessions first
+        await UserSessionService.deleteUserSessions(id);
 
-    // Then delete user
-    await connection.query(`
-        DELETE FROM users
-        WHERE id = ?
-    `, [id]);
+        // Then delete user
+        await User.destroy({
+            where: {
+                id: id
+            }
+        })
+    } catch(error: any) {
+        const message = `deleteUser error: ${error.message}`;
+        throw new InternalServerError(message);
+    }
 }

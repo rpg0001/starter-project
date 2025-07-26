@@ -27,6 +27,7 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
       throw new UnauthorizedError("Session expired");
     }
 
+    logger.debug(`Found user session: ${JSON.stringify(session)}`)
     const user = await getUser(session.userId);
 
     if (!user) {

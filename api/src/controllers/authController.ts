@@ -56,7 +56,7 @@ export async function signIn(req: any, res: any, next: any) {
         validateEmail(email);
 
         // Find user
-        const users = await UserService.searchUsers(undefined, email);
+        const users = await UserService.searchUsersByEmail(email);
         
         if (users.length > 1) {
             throw new Error("More than one user found with email")
@@ -126,8 +126,9 @@ export async function getMe(req: any, res: any, next: any) {
         }
 
         const session = await UserSessionService.getUserSession(token);
+        logger.debug(`Sessoin found: ${JSON.stringify(session)}`)
 
-        if (!session || session.expiresAt < new Date()) {
+        if (!session || !session.userId ||session.expiresAt < new Date()) {
             res.clearCookie("session");
             throw new UnauthorizedError("Invalid session");
         }
