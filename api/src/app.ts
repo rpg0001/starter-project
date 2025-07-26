@@ -1,7 +1,6 @@
 import dotenv from 'dotenv';
 dotenv.config();
 import express from 'express';
-import mysql from 'mysql2';
 import morgan from 'morgan';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -14,6 +13,9 @@ import { config } from './utils/config';
 import { DEFAULT_LOG_LEVEL, DEFAULT_PORT } from './utils/constants';
 import { requireAuth } from './middleware/requireAuth';
 import { requireAdmin } from './middleware/requireAdmin';
+import { testDatabaseConnection } from './services/databaseService';
+import { Sequelize } from 'sequelize';
+import { initModels } from './models';
 const errorHandler = require('./middleware/errorHandler');
 
 // Validate config
@@ -39,12 +41,14 @@ app.use(morgan('tiny', {
 }));
 
 // Connect to DB
-export const connection = mysql.createPool({
-    host: config.DB_HOST,
-    user: config.DB_USER,
-    password: config.DB_PASSWORD,
-    database: config.DB_NAME,
-}).promise();
+export const sequelize = new Sequelize(
+        config.DB_NAME, config.DB_USER, config.DB_PASSWORD, {
+        host: config.DB_HOST,
+        dialect: 'mysql',
+        logging: msg => logger.debug(msg)
+    });
+testDatabaseConnection(sequelize);
+initModels();
 
 // Health check route
 app.get('/api', (req, res) => res.status(200).json('OK'));

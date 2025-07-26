@@ -1,13 +1,44 @@
-export class Note {
-    id: number;
-    title: string;
-    content: string;
-    userId: number;
+import { DataTypes, Model } from "sequelize";
+import { User } from "./userModel";
+import { sequelize } from "../app";
 
-    constructor(id: number, title: string, content: string, userId: number) {
-        this.id = id;
-        this.title = title;
-        this.content = content;
-        this.userId = userId;
-    }
+export class Note extends Model {
+    declare id: number;
+    declare title: string;
+    declare content: string;
+    declare userId: number;
+}
+
+export function initNoteModel() {
+    Note.init(
+        {
+            id: {
+                type: DataTypes.INTEGER,
+                autoIncrement: true,
+                primaryKey: true,
+                field: "id"
+            },
+            title: {
+                type: DataTypes.STRING,
+                field: "title"
+            },
+            content: {
+                type: DataTypes.STRING,
+                field: "content"
+            },
+            userId: {
+                type: DataTypes.INTEGER,
+                field: "user_id",
+                references: {
+                    model: User,
+                    key: "id",
+                }
+            },
+        },
+        { 
+            tableName: "notes",
+            timestamps: false,
+            sequelize 
+        }
+    )
 }
