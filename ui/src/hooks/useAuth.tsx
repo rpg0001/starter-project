@@ -2,7 +2,7 @@ import { createContext, useContext, useState, useEffect } from 'react';
 import { getMe, signIn, signOut, signUp } from '../services/auth';
 import { User } from '../services/users';
 
-export interface AuthContextType {
+interface AuthContextType {
   user: User | null;
   postSignIn: (email: string, password: string) => Promise<void>;
   postSignUp: (email: string, password: string, username: string) => Promise<void>;
