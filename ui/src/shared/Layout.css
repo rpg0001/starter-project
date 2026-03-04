@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 .main-navbar ul {
     @apply 
         flex 
