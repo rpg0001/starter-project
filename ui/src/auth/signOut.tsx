@@ -21,7 +21,7 @@ export default function SignOut() {
     }
     
     return <>
-        {!isLoading && <button onClick={() => handleSignOut()}>Sign Out</button>}
+        {!isLoading && <button onClick={() => handleSignOut()} type="button">Sign Out</button>}
         {isLoading && <p>Signing out...</p>}
         {errorMessage && <p>{errorMessage}</p>}
     </>;
