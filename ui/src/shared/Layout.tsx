@@ -1,7 +1,7 @@
 import { Outlet, Link } from "react-router-dom";
 import './Layout.css';
-import { AuthContextType, useAuth } from "../hooks/useAuth";
-import { useState } from "react";
+import { useAuth } from "../hooks/useAuth";
+import SignOut from "../auth/signOut";
 
 export default function Layout() {
     const auth = useAuth();
@@ -13,7 +13,7 @@ export default function Layout() {
                     {auth.user ? 
                         <ul>
                             <li>
-                                <SignOut auth={auth} />
+                                <SignOut />
                             </li>
                             <li>
                                 <Link to="/auth/me">Account</Link>
@@ -59,27 +59,3 @@ export default function Layout() {
         </>
     )
 };
-
-function SignOut(props: { auth: AuthContextType }) {
-    const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [errorMessage, setErrorMessage] = useState<string>();
-
-    async function handleSignOut() {
-        try {
-            setIsLoading(true);
-            await props.auth.postSignOut()
-            setIsLoading(false);
-        } catch (error: any) {
-            setIsLoading(false);
-            console.error(error.message);
-            setErrorMessage("Failed to sign out, please try again");
-            return;
-        }
-    }
-    
-    return <>
-        {!isLoading && <button onClick={() => handleSignOut()}>Sign Out</button>}
-        {isLoading && <p>Signing out...</p>}
-        {errorMessage && <p>{errorMessage}</p>}
-    </>;
-}

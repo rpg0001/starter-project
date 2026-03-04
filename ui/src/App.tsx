@@ -8,7 +8,7 @@ import { CreateNote } from "./notes/CreateNote";
 import EditNote from "./notes/EditNote";
 import { AuthProvider } from "./hooks/useAuth";
 import SignUp from "./auth/signUp";
-import SignIn from "./auth/signIn";
+import SignIn from "./auth/SignIn";
 import Me from "./auth/me";
 import { ProtectedRoute } from "./components/protectedRoute";
 
