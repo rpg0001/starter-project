@@ -16,6 +16,7 @@ import { requireAdmin } from './middleware/requireAdmin';
 import { testDatabaseConnection } from './services/databaseService';
 import { Sequelize } from 'sequelize';
 import { initModels } from './models';
+import { csrf } from 'lusca';
 const errorHandler = require('./middleware/errorHandler');
 
 // Validate config
@@ -39,6 +40,7 @@ app.use(morgan('tiny', {
     write: (message: string) => logger.http(message.trim()) 
   }
 }));
+app.use(csrf());
 
 // Connect to DB
 export const sequelize = new Sequelize(
