@@ -2,7 +2,7 @@ import { createContext, useContext, useState, useEffect } from 'react';
 import { getMe, signIn, signOut, signUp } from '../services/auth';
 import { User } from '../services/users';
 
-interface AuthContextType {
+export interface AuthContextType {
   user: User | null;
   postSignIn: (email: string, password: string) => Promise<void>;
   postSignUp: (email: string, password: string, username: string) => Promise<void>;
@@ -59,7 +59,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 }
 
 // Custom hook to access the auth context from any component
-export function useAuth() {
+export function useAuth(): AuthContextType {
   const context = useContext(AuthContext);
   if (context === undefined) {
     throw new Error('useAuth must be used within an AuthProvider');
