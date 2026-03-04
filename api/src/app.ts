@@ -16,6 +16,7 @@ import { requireAdmin } from './middleware/requireAdmin';
 import { testDatabaseConnection } from './services/databaseService';
 import { Sequelize } from 'sequelize';
 import { initModels } from './models';
+import { csrf } from 'lusca';
 const errorHandler = require('./middleware/errorHandler');
 
 // Validate config
@@ -62,6 +63,7 @@ app.use("/api/users", requireAuth, requireAdmin, UserRouter);
 
 // Custom error handler
 app.use(errorHandler);
+app.use(csrf());
 
 // Start server
 app.listen(port, () => {
