@@ -40,7 +40,6 @@ app.use(morgan('tiny', {
     write: (message: string) => logger.http(message.trim()) 
   }
 }));
-app.use(csrf());
 
 // Connect to DB
 export const sequelize = new Sequelize(
@@ -64,6 +63,7 @@ app.use("/api/users", requireAuth, requireAdmin, UserRouter);
 
 // Custom error handler
 app.use(errorHandler);
+app.use(csrf());
 
 // Start server
 app.listen(port, () => {
