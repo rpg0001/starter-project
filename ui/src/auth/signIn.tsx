@@ -3,13 +3,14 @@ import { useAuth } from "../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 
 export default function SignIn() {
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const [email, setEmail] = useState<string>();
     const [password, setPassword] = useState<string>();
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const auth = useAuth();
     const navigate = useNavigate();
 
-    function handleSubmit(event: any) {
+    async function handleSubmit(event: any) {
         event.preventDefault();
         
         if (!email || !password) {
@@ -18,11 +19,14 @@ export default function SignIn() {
         }
 
         try {
-            auth.postSignIn(email, password);
+            setIsLoading(true);
+            await auth.postSignIn(email, password);
+            setIsLoading(false);
             navigate("/");
         } catch (error: any) {
+            setIsLoading(false);
             console.error(error.message);
-            setErrorMessage("Failed to sign up, please try again");
+            setErrorMessage("Failed to sign in, please try again");
             return;
         }
     }
@@ -32,8 +36,9 @@ export default function SignIn() {
             <h1>Sign in</h1>
             
             {errorMessage ? <p>{ errorMessage }</p> : null}
+            {isLoading ? <p>Signing in...</p> : null}
 
-            <form onSubmit={handleSubmit}>
+            {!isLoading && <form onSubmit={handleSubmit}>
                 <div>
                     <label htmlFor='email'>Email</label>
                     <input 
@@ -53,7 +58,7 @@ export default function SignIn() {
                     />
                 </div>
                 <button type='submit'>Sign in</button>
-            </form>
+            </form>}
         </div>
     )
 }

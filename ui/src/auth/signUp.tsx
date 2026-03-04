@@ -3,6 +3,7 @@ import { useAuth } from "../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 
 export default function SignUp() {
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const [email, setEmail] = useState<string>();
     const [username, setUsername] = useState<string>();
     const [password, setPassword] = useState<string>();
@@ -11,7 +12,7 @@ export default function SignUp() {
     const auth = useAuth();
     const navigate = useNavigate();
 
-    function handleSubmit(event: any) {
+    async function handleSubmit(event: any) {
         event.preventDefault();
 
         if (password !== confirmPassword) {
@@ -25,9 +26,12 @@ export default function SignUp() {
         }
 
         try {
-            auth.postSignUp(email, password, username);
+            setIsLoading(true);
+            await auth.postSignUp(email, password, username);
+            setIsLoading(false);
             navigate("/");
         } catch (error: any) {
+            setIsLoading(false);
             console.error(error.message);
             setErrorMessage("Failed to sign up, please try again");
             return;
@@ -39,8 +43,9 @@ export default function SignUp() {
             <h1>Sign up</h1>
             
             {errorMessage ? <p>{ errorMessage }</p> : null}
+            {isLoading ? <p>Signing up...</p> : null}
 
-            <form onSubmit={handleSubmit}>
+            {!isLoading && <form onSubmit={handleSubmit}>
                 <div>
                     <label htmlFor='email'>Email</label>
                     <input 
@@ -78,7 +83,7 @@ export default function SignUp() {
                     />
                 </div>
                 <button type='submit'>Sign up</button>
-            </form>
+            </form>}
         </div>
     )
 }
